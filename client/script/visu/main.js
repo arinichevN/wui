@@ -75,6 +75,17 @@ function Monitor() {
 		{name: "Pos2", value:1},
 		{name: "Pos1", value:2}
 	];
+	this.device_kind_list = [
+		{name: "no", value:0},
+		{name: "MAX6675", value:1},
+		{name: "MAX31855", value:2},
+		{name: "DS18B20", value:3},
+		{name: "SPWM", value:4},
+		{name: "HPWM", value:5},
+		{name: "DHT22", value:6},
+		{name: "DHT22T", value:7},
+		{name: "DHT22H", value:8}
+	];
 	this.yn_list = [
 		{name: "YES", value:1},
 		{name: "NO", value:0}
@@ -108,7 +119,7 @@ function Monitor() {
 		this.servoG = new ServoGroup(this.peer, this.channel);
 		this.regG = new RegGroup(this.peer, this.channel, this.regmethod_list, this.regmode_list);
 		this.commonG = new CommonGroup(this.peer, this.channel, this.yn_list);
-		this.channelG = new ChannelGroup(this.peer, this.channel, this.yn_list);
+		this.channelG = new ChannelGroup(this.peer, this.channel, this.yn_list, this.device_kind_list);
 		this.appG = new AppGroup(this.peer, this.channel, this.sdev_list, this.srate_list, this.sconf_list, this.skind_list, this.yn_list);
 		this.secureG = new SecureGroup(this.peer, this.channel, this.yn_list);
 		this.emG = new EMGroup(this.peer, this.channel, this.sdev_list);
@@ -116,7 +127,7 @@ function Monitor() {
 		
 		a(pcont, [this.ipaddrE, this.portE, this.idE]);
 		a(this.container, [pcont]);
-		a(this.container, [ this.commonG, this.appG, this.channelG, this.pwmG, this.servoG, this.regG, this.sensorG, this.emG, this.secureG]);
+		a(this.container, [ this.commonG, this.appG, this.channelG, this.pwmG, this.servoG, this.sensorG, this.regG, this.sensorG, this.emG, this.secureG]);
 		a(this.container, [this.textE]);
 		this.initialized = true;
 		this.updatePort();

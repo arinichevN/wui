@@ -83,6 +83,8 @@ trans.addDict([
     
     {id: 372, str: ["min output",  "мин. выход"]},
     {id: 373, str: ["max output",  "макс. выход"]},
+    
+    {id: 374, str: ["device kind",  "тип устройства"]},
 ]);
 //menu
 trans.addDict([
