@@ -7,9 +7,9 @@ function PWMGroup(peer, channel) {
 	this.updateStr = function () {
 		this.container.updateStr(trans.get(350));
 		this.resolution.updateStr(trans.get(351)); 
-		this.period.updateStr(trans.get(352)); 
-		this.dcmin.updateStr(trans.get(361)); 
-		this.dcmax.updateStr(trans.get(362)); 
+		this.period.updateStr(trans.get(375)); 
+		this.dcmin.updateStr(trans.get(376)); 
+		this.dcmax.updateStr(trans.get(377)); 
 	};
 	this.container.a([this.resolution, this.period, this.dcmin, this.dcmax]);
 }

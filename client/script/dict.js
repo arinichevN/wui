@@ -85,6 +85,11 @@ trans.addDict([
     {id: 373, str: ["max output",  "макс. выход"]},
     
     {id: 374, str: ["device kind",  "тип устройства"]},
+    
+    {id: 375, str: ["period, ms", "период, мс"]},
+    {id: 376, str: ["pulse width min, ms",  "мин. длительность импульсов, мс"]},
+    {id: 377, str: ["pulse width max, ms",  "макс. длительность импульсов, мс"]}
+    
 ]);
 //menu
 trans.addDict([
