@@ -208,3 +208,14 @@ var CMD_ = {
 	CMD_GATEWAY_PRINT:0,
 	CMD_GATEWAY_RESET:0
 };
+
+function acp_buildCommands(){
+	var i = 0;
+	for(var p in CMD_){
+		CMD_[p] = i;
+		i++;
+	}
+	console.log(CMD_);
+}
+
+acp_buildCommands();

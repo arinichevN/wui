@@ -10,7 +10,6 @@ var app = {
     },
     init: function () {
          trans.active_lang=1;
-         acp_init();
     },
     update: function () {
         this.sendU();
