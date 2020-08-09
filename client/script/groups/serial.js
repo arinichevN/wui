@@ -3,9 +3,9 @@ function SerialGroup(peer, channel, dev_list, rate_list, config_list, kind_list,
 	this.channel2 = {id:null};
 	this.idE = new SelectElem(dev_list, 1, "pr_idelem", this.channel2);
 	this.DEFAULT_ID = 1;
-	this.rate = new ParamElemGSEnum2(peer, channel, this.channel2, CMD_GET_APP_SERIAL_RATE, CMD_SET_APP_SERIAL_RATE, rate_list);
-	this.config = new ParamElemGSEnum2(peer, channel, this.channel2, CMD_GET_APP_SERIAL_CONFIG, CMD_SET_APP_SERIAL_CONFIG, config_list);
-	this.kind = new ParamElemGSEnum2(peer, channel, this.channel2, CMD_GET_APP_SERIAL_KIND, CMD_SET_APP_SERIAL_KIND, kind_list);
+	this.rate = new ParamElemGSEnum2(peer, channel, this.channel2, CMD_.GET_APP_SERIAL_RATE, CMD_.SET_APP_SERIAL_RATE, rate_list);
+	this.config = new ParamElemGSEnum2(peer, channel, this.channel2, CMD_.GET_APP_SERIAL_CONFIG, CMD_.SET_APP_SERIAL_CONFIG, config_list);
+	this.kind = new ParamElemGSEnum2(peer, channel, this.channel2, CMD_.GET_APP_SERIAL_KIND, CMD_.SET_APP_SERIAL_KIND, kind_list);
 	this.updateStr = function () {
 		this.container.updateStr(trans.get(330));
 		this.idE.updateStr(trans.get(302));

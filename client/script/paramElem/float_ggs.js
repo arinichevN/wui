@@ -45,7 +45,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildPackSI(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -57,7 +57,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
     };
     this.sendRequestGetr = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildPackSI(this.cmd_getr, this.channel.id );
+		var pack = acp_buildRequestII(this.cmd_getr, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -71,7 +71,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
 		var v = parseFloat(this.setE.value);
 		if(isNaN(v) || !isFinite(v)){return;}
-		var pack = acp_buildPackSIF(this.cmd_set, this.channel.id, v, this.precision);
+		var pack = acp_buildRequestIIF(this.cmd_set, this.channel.id, v, this.precision);
         var data = [
             {
                 action: ['set_data'],
@@ -85,7 +85,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
 		var elemv = this.UNKNOWN_STR;
 		var bstyle = "pr_failed";
 		if(v !== null){
-			var data = acp_parsePack(v, {v1:null, v2:null});
+			var data = acp_parseResponse(v, {v1:null, v2:null});
 			if(data instanceof Array && data.length == 1){
 				var id = parseInt(data[0].v1);
 				var val = parseFloat(data[0].v2);
@@ -104,7 +104,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
 		var elemv = this.UNKNOWN_STR;
 		var bstyle = "pr_failed";
 		if(v !== null){
-			var data = acp_parsePack(v, {v1:null, v2:null, v3:null});
+			var data = acp_parseResponse(v, {v1:null, v2:null, v3:null});
 			if(data instanceof Array && data.length == 1){
 				var id = parseInt(data[0].v1);
 				var val = parseFloat(data[0].v2);

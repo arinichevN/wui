@@ -21,7 +21,7 @@ function ParamElemGFTS(peer, channel, cmd_get) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildPackSI(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -35,7 +35,7 @@ function ParamElemGFTS(peer, channel, cmd_get) {
 		var elemv = this.UNKNOWN_STR;
 		var bstyle = "pr_failed";
 		if(v !== null){
-			var data = acp_parsePack(v, {id:null, value:null, tv_sec:null, tv_nsec:null, state:null});
+			var data = acp_parseResponse(v, {id:null, value:null, tv_sec:null, tv_nsec:null, state:null});
 			if(data instanceof Array && data.length == 1){
 				var id = parseInt(data[0].id);
 				var val = parseFloat(data[0].value);

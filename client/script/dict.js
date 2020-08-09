@@ -88,7 +88,34 @@ trans.addDict([
     
     {id: 375, str: ["period, ms", "период, мс"]},
     {id: 376, str: ["pulse width min, ms",  "мин. длительность импульсов, мс"]},
-    {id: 377, str: ["pulse width max, ms",  "макс. длительность импульсов, мс"]}
+    {id: 377, str: ["pulse width max, ms",  "макс. длительность импульсов, мс"]},
+    
+    {id: 378, str: ["year",  "год"]},
+    {id: 379, str: ["month",  "месяц"]},
+    {id: 380, str: ["day",  "день"]},
+    {id: 381, str: ["hour",  "час"]},
+    {id: 382, str: ["minute",  "минута"]},
+    {id: 383, str: ["second",  "секунда"]},
+    {id: 384, str: ["date",  "дата"]},
+    {id: 385, str: ["time",  "время"]},
+    {id: 386, str: ["clock",  "часы"]},
+    
+    {id: 387, str: ["timer",  "таймер"]},
+	{id: 388, str: ["on time",  "время включения"]},
+	{id: 389, str: ["on time",  "время выключения"]},
+	{id: 390, str: ["on interval, s",  "продолжительность работы, с"]},
+	{id: 391, str: ["off interval, s",  "продолжительность простоя, с"]},
+	{id: 392, str: ["on output",  "выход при работе"]},
+	{id: 393, str: ["off output",  "выход при простое"]},
+	
+	{id: 394, str: ["pin",  "пин"]},
+	
+	{id: 395, str: ["application id",  "идентификатор приложения"]},
+	{id: 396, str: ["channel id",  "идентификатор канала"]},
+	
+	{id: 397, str: ["now",  "сейчас"]},
+	{id: 398, str: ["paste current date",  "вставить текущую дату"]},
+	{id: 399, str: ["paste current time",  "вставить текущее время"]}
     
 ]);
 //menu

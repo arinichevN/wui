@@ -3,16 +3,19 @@ function Monitor() {
     this.container = {};
     this.DEFAULT_PORT = 49188;
     this.DEFAULT_IPADDR = '127.0.0.1';
-    this.DEFAULT_ID = 1;
+    this.DEFAULT_CHANNEL_ID = 21;
+    this.DEFAULT_APP_ID = 20;
     this.initialized = false;
     this.update = true; //editor will make it false
     this.visible = false;
     this.peer = {port:null, ipaddr:null};
     this.channel = {id:null};
+    this.app = {id:null};
     this.port = null;
     this.ipaddrE = null;
     this.portE = null;
     this.idE = null;
+    this.idaE = null;
     this.textE = null;
 	this.srate_list = [
 		{name: "300", value:1},
@@ -84,7 +87,9 @@ function Monitor() {
 		{name: "HPWM", value:5},
 		{name: "DHT22", value:6},
 		{name: "DHT22T", value:7},
-		{name: "DHT22H", value:8}
+		{name: "DHT22H", value:8},
+		{name: "TIMER", value:9},
+		{name: "DS3231", value:10}
 	];
 	this.yn_list = [
 		{name: "YES", value:1},
@@ -101,7 +106,10 @@ function Monitor() {
 	    var self = this;
 	    this.idE = c("input");
 	    this.idE.type = "number";
-	    this.idE.value = this.DEFAULT_ID;
+	    this.idE.value = this.DEFAULT_CHANNEL_ID;
+	    this.idaE = c("input");
+	    this.idaE.type = "number";
+	    this.idaE.value = this.DEFAULT_APP_ID;
 	    this.textE = c('pre');
 	    var self = this;
 		this.portE.onchange = function(){
@@ -113,6 +121,9 @@ function Monitor() {
 		this.idE.onchange = function(){
 			self.updateChannel();
 		};
+		this.idaE.onchange = function(){
+			self.updateApp();
+		};
 
 		var pcont = cd();
 		this.pwmG = new PWMGroup(this.peer, this.channel);
@@ -120,25 +131,28 @@ function Monitor() {
 		this.regG = new RegGroup(this.peer, this.channel, this.regmethod_list, this.regmode_list);
 		this.commonG = new CommonGroup(this.peer, this.channel, this.yn_list);
 		this.channelG = new ChannelGroup(this.peer, this.channel, this.yn_list, this.device_kind_list);
-		this.appG = new AppGroup(this.peer, this.channel, this.sdev_list, this.srate_list, this.sconf_list, this.skind_list, this.yn_list);
+		this.appG = new AppGroup(this.peer, this.app, this.sdev_list, this.srate_list, this.sconf_list, this.skind_list, this.yn_list);
 		this.secureG = new SecureGroup(this.peer, this.channel, this.yn_list);
 		this.emG = new EMGroup(this.peer, this.channel, this.sdev_list);
 		this.sensorG = new SensorGroup(this.peer, this.channel, this.sdev_list);
-		
-		a(pcont, [this.ipaddrE, this.portE, this.idE]);
+		this.rtcG = new RTCGroup(this.peer, this.app);
+		this.timerG = new TimerGroup(this.peer, this.channel);
+		a(pcont, [this.ipaddrE, this.portE, this.idE, this.idaE]);
 		a(this.container, [pcont]);
-		a(this.container, [ this.commonG, this.appG, this.channelG, this.pwmG, this.servoG, this.sensorG, this.regG, this.sensorG, this.emG, this.secureG]);
+		a(this.container, [ this.commonG, this.appG, this.channelG, this.pwmG, this.servoG, this.sensorG, this.regG, this.sensorG, this.emG, this.secureG, this.rtcG, this.timerG]);
 		a(this.container, [this.textE]);
 		this.initialized = true;
 		this.updatePort();
 		this.updateIPaddr();
 		this.updateChannel();
+		this.updateApp();
     };
     this.getName = function () {
         return trans.get(401);
     };
     this.updateStr = function () {
-		this.idE.title = trans.get(302);
+		this.idE.title = trans.get(396);
+		this.idaE.title = trans.get(395);
 		this.portE.title = trans.get(301);
 		this.ipaddrE.title = trans.get(308);
 		this.pwmG.updateStr();
@@ -150,6 +164,8 @@ function Monitor() {
 		this.commonG.updateStr();
 		this.channelG.updateStr();
 		this.appG.updateStr();
+		this.rtcG.updateStr();
+		this.timerG.updateStr();
     };
     this.updatePort = function(){
 		this.peer.port = this.getInt(this.portE.value);
@@ -159,6 +175,9 @@ function Monitor() {
 	};
 	this.updateChannel = function(){
 		this.channel.id = this.getInt(this.idE.value);
+	};
+	this.updateApp = function(){
+		this.app.id = this.getInt(this.idaE.value);
 	};
 	this.getInt = function(v){
 		var out = parseInt(v);

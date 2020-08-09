@@ -35,7 +35,7 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 	};
 	this.sendRequestGet = function () {
 		if(this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildPackS(this.cmd_get );
+		var pack = acp_buildRequestI(this.cmd_get );
         var data = [
             {
                 action: ['get_data'],
@@ -50,7 +50,7 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 		var v = parseInt(me.setE.value);
 		if(isNaN(v)){return;}
 		if(v < me.min_v || v > me.max_v) return;
-		var pack = acp_buildPackSI(me.cmd_set, v);
+		var pack = acp_buildRequestII(me.cmd_set, v);
         var data = [
             {
                 action: ['set_data'],
@@ -64,7 +64,7 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 		var elemv = this.UNKNOWN_STR;
 		var bstyle = "pr_failed";
 		if(v !== null){
-			var data = acp_parsePack(v, {v1:null, v2:null});
+			var data = acp_parseResponse(v, {v1:null, v2:null});
 			if(data instanceof Array && data.length == 1){
 				var val = parseInt(data[0].v1);
 				var status = parseInt(data[0].v2);

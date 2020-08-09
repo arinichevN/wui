@@ -18,7 +18,7 @@ function ParamElemGStr(peer, channel, cmd_get) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildPackSI(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -32,7 +32,7 @@ function ParamElemGStr(peer, channel, cmd_get) {
 		var elemv =  this.UNKNOWN_STR;
 		var bstyle = "pr_failed";
 		if(v !== null){
-			var data = acp_parsePack(v, {v1:null, v2:null});
+			var data = acp_parseResponse(v, {v1:null, v2:null});
 			if(data instanceof Array && data.length == 1){
 				var id = parseInt(data[0].v1);
 				var val = data[0].v2;

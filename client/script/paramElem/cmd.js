@@ -14,7 +14,7 @@ function ParamElemSCmd(peer, channel, cmd, protect) {
 	};
 	this.sendRequest = function (me) {
 		if(me.channel.id === null || me.peer.port === null || me.peer.ipaddr === null) return;
-		var pack = acp_buildPackSI(me.cmd, me.channel.id );
+		var pack = acp_buildRequestII(me.cmd, me.channel.id );
         var data = [
             {
                 action: ['set_data'],

@@ -33,7 +33,7 @@ function ParamElemSInt(peer, channel, cmd_set, min_v, max_v) {
 		var v = parseInt(this.setE.value);
 		if(isNaN(v)){return;}
 		if(v < this.min_v || v > this.max_v) return;
-		var pack = acp_buildPackSII(this.cmd_set, this.channel.id, v);
+		var pack = acp_buildRequestIII(this.cmd_set, this.channel.id, v);
         var data = [
             {
                 action: ['set_data'],

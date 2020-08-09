@@ -59,10 +59,48 @@
 .pr_getelem:hover{
     outline:1px solid gray;
 }
+.pr_getelemnv{
+	float:left;
+	min-width: 50px;
+	min-height:20px;
+	margin: 1px;
+	padding-left: 3px;
+	padding-right:3px;
+	background-color:lightgray;
+}
+.pr_getelemnv:hover{
+    outline:1px solid gray;
+}
+.pr_getelemv{
+	float:left;
+	min-width: 50px;
+	min-height:20px;
+	margin: 1px;
+	padding-left: 3px;
+	padding-right:3px;
+	background-color:lightgreen;
+}
+.pr_getelemv:hover{
+    outline:1px solid gray;
+}
 .pr_setelem{
 	float:left;
 	margin-left:5px;
 	max-width:80px;
+}
+.pr_setelem2{
+	float:left;
+	margin-left:5px;
+	max-width:40px;
+}
+.pr_setelem4{
+	float:left;
+	margin-left:5px;
+	max-width:60px;
+}
+.pr_setcont{
+	float:left;
+	margin-left:5px;
 }
 .pr_idelem{
 	float:left;

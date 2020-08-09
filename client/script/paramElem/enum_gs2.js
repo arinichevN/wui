@@ -25,7 +25,7 @@ function ParamElemGSEnum2(peer, channel1, channel2, cmd_get, cmd_set, list) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel1.id === null || this.channel2.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildPackSII(this.cmd_get, this.channel1.id, this.channel2.id );
+		var pack = acp_buildRequestIII(this.cmd_get, this.channel1.id, this.channel2.id );
         var data = [
             {
                 action: ['get_data'],
@@ -39,7 +39,7 @@ function ParamElemGSEnum2(peer, channel1, channel2, cmd_get, cmd_set, list) {
 		if(this.channel1.id === null || this.channel2.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
 		var v = this.setE.getValue();
 		if(v === null) return;
-		var pack = acp_buildPackSIII(this.cmd_set, this.channel1.id, this.channel2.id, v);
+		var pack = acp_buildRequestIIII(this.cmd_set, this.channel1.id, this.channel2.id, v);
         var data = [
             {
                 action: ['set_data'],
@@ -53,7 +53,7 @@ function ParamElemGSEnum2(peer, channel1, channel2, cmd_get, cmd_set, list) {
 		var elemv = this.UNKNOWN_STR;
 		var bstyle = "pr_failed";
 		if(v !== null){
-			var data = acp_parsePack(v, {v1:null, v2:null, v3:null, v4:null});
+			var data = acp_parseResponse(v, {v1:null, v2:null, v3:null, v4:null});
 			if(data instanceof Array && data.length == 1){
 				var id = parseInt(data[0].v1);
 				var sid = parseInt(data[0].v2);

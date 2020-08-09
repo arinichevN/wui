@@ -1,18 +1,18 @@
 function RegGroup(peer, channel, method_list, mode_list) {
 	this.container = new GroupElem();
-	this.method = new ParamElemGGSEnum(peer, channel, CMD_GET_REG_METHOD, CMD_GETR_REG_METHOD, CMD_SET_REG_METHOD, method_list);
+	this.method = new ParamElemGGSEnum(peer, channel, CMD_.GET_REG_METHOD, CMD_.GETR_REG_METHOD, CMD_.SET_REG_METHOD, method_list);
 	this.pidc = new GroupElem();
-	this.pid_mode = new ParamElemGGSEnum(peer, channel, CMD_GET_PID_MODE, CMD_GETR_PID_MODE, CMD_SET_PID_MODE, mode_list);
-	this.pid_kp = new ParamElemGGSFloat(peer, channel, CMD_GET_PID_KP, CMD_GETR_PID_KP, CMD_SET_PID_KP, 0, INT32_MAX);
-	this.pid_ki = new ParamElemGGSFloat(peer, channel, CMD_GET_PID_KI, CMD_GETR_PID_KI, CMD_SET_PID_KI, 0, INT32_MAX);
-	this.pid_kd = new ParamElemGGSFloat(peer, channel, CMD_GET_PID_KD, CMD_GETR_PID_KD, CMD_SET_PID_KD, 0, INT32_MAX);
-	this.pid_out_min = new ParamElemGGSFloat(peer, channel, CMD_GET_PID_OUT_MIN, CMD_GETR_PID_OUT_MIN, CMD_SET_PID_OUT_MIN, 0, INT32_MAX);
-	this.pid_out_max = new ParamElemGGSFloat(peer, channel, CMD_GET_PID_OUT_MAX, CMD_GETR_PID_OUT_MAX, CMD_SET_PID_OUT_MAX, 0, INT32_MAX);
+	this.pid_mode = new ParamElemGGSEnum(peer, channel, CMD_.GET_PID_MODE, CMD_.GETR_PID_MODE, CMD_.SET_PID_MODE, mode_list);
+	this.pid_kp = new ParamElemGGSFloat(peer, channel, CMD_.GET_PID_KP, CMD_.GETR_PID_KP, CMD_.SET_PID_KP, 0, INT32_MAX);
+	this.pid_ki = new ParamElemGGSFloat(peer, channel, CMD_.GET_PID_KI, CMD_.GETR_PID_KI, CMD_.SET_PID_KI, 0, INT32_MAX);
+	this.pid_kd = new ParamElemGGSFloat(peer, channel, CMD_.GET_PID_KD, CMD_.GETR_PID_KD, CMD_.SET_PID_KD, 0, INT32_MAX);
+	this.pid_out_min = new ParamElemGGSFloat(peer, channel, CMD_.GET_PID_OUT_MIN, CMD_.GETR_PID_OUT_MIN, CMD_.SET_PID_OUT_MIN, 0, INT32_MAX);
+	this.pid_out_max = new ParamElemGGSFloat(peer, channel, CMD_.GET_PID_OUT_MAX, CMD_.GETR_PID_OUT_MAX, CMD_.SET_PID_OUT_MAX, 0, INT32_MAX);
 	this.pos2c = new GroupElem();
-	this.pos2_mode = new ParamElemGGSEnum(peer, channel, CMD_GET_POS2_MODE, CMD_GETR_POS2_MODE, CMD_SET_POS2_MODE, mode_list);
-	this.pos2_hys = new ParamElemGGSFloat(peer, channel, CMD_GET_POS2_HYS, CMD_GETR_POS2_HYS, CMD_SET_POS2_HYS, 0, INT32_MAX);
-	this.pos2_omin = new ParamElemGGSInt(peer, channel, CMD_GET_POS2_OUT_MIN, CMD_GETR_POS2_OUT_MIN, CMD_SET_POS2_OUT_MIN, 0, INT32_MAX);
-	this.pos2_omax = new ParamElemGGSInt(peer, channel, CMD_GET_POS2_OUT_MAX, CMD_GETR_POS2_OUT_MAX, CMD_SET_POS2_OUT_MAX, 0, INT32_MAX);
+	this.pos2_mode = new ParamElemGGSEnum(peer, channel, CMD_.GET_POS2_MODE, CMD_.GETR_POS2_MODE, CMD_.SET_POS2_MODE, mode_list);
+	this.pos2_hys = new ParamElemGGSFloat(peer, channel, CMD_.GET_POS2_HYS, CMD_.GETR_POS2_HYS, CMD_.SET_POS2_HYS, 0, INT32_MAX);
+	this.pos2_omin = new ParamElemGGSInt(peer, channel, CMD_.GET_POS2_OUT_MIN, CMD_.GETR_POS2_OUT_MIN, CMD_.SET_POS2_OUT_MIN, 0, INT32_MAX);
+	this.pos2_omax = new ParamElemGGSInt(peer, channel, CMD_.GET_POS2_OUT_MAX, CMD_.GETR_POS2_OUT_MAX, CMD_.SET_POS2_OUT_MAX, 0, INT32_MAX);
 	this.updateStr = function () {
 		this.container.updateStr(trans.get(345));
 		this.method.updateStr(trans.get(346)); 

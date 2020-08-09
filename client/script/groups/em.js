@@ -1,10 +1,10 @@
 function EMGroup(peer, channel, sdev_list) {
 	this.container = new GroupElem();
-	this.id = new ParamElemGGSInt(peer, channel, CMD_GET_REM_ID, CMD_GETR_REM_ID, CMD_SET_REM_ID, INT16_MIN, INT16_MAX);
-	this.interval = new ParamElemGGSInt(peer, channel, CMD_GET_REM_INTERVAL, CMD_GETR_REM_INTERVAL, CMD_SET_REM_INTERVAL, 0, INT32_MAX);
-	this.serial = new ParamElemGGSEnum(peer, channel, CMD_GET_REM_SERIAL, CMD_GETR_REM_SERIAL, CMD_SET_REM_SERIAL, sdev_list);
-	this.state = new ParamElemGStr(peer, channel, CMD_GETR_REM_STATE);
-	this.err = new ParamElemGStr(peer, channel, CMD_GETR_REM_ERROR);
+	this.id = new ParamElemGGSInt(peer, channel, CMD_.GET_REM_ID, CMD_.GETR_REM_ID, CMD_.SET_REM_ID, INT16_MIN, INT16_MAX);
+	this.interval = new ParamElemGGSInt(peer, channel, CMD_.GET_REM_INTERVAL, CMD_.GETR_REM_INTERVAL, CMD_.SET_REM_INTERVAL, 0, INT32_MAX);
+	this.serial = new ParamElemGGSEnum(peer, channel, CMD_.GET_REM_SERIAL, CMD_.GETR_REM_SERIAL, CMD_.SET_REM_SERIAL, sdev_list);
+	this.state = new ParamElemGStr(peer, channel, CMD_.GETR_REM_STATE);
+	this.err = new ParamElemGStr(peer, channel, CMD_.GETR_REM_ERROR);
 	this.updateStr = function () {
 		this.container.updateStr(trans.get(341));
 		this.id.updateStr(trans.get(302)); 
