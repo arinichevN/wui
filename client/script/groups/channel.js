@@ -9,7 +9,7 @@ function ChannelGroup(peer, channel, yn_list, device_kind_list) {
 	this.save_goal = new ParamElemGGSEnum(peer, channel, CMD_.GET_CHANNEL_SAVE_GOAL, CMD_.GETR_CHANNEL_SAVE_GOAL, CMD_.SET_CHANNEL_SAVE_GOAL, yn_list);
 	this.state = new ParamElemGStr(peer, channel, CMD_.GETR_CHANNEL_STATE);
 	this.err = new ParamElemGStr(peer, channel, CMD_.GETR_CHANNEL_ERROR);
-	this.gfts = new ParamElemGFTS(peer, channel, CMD_.GET_CHANNEL_FTS);
+	this.gfts = new ParamElemGFTS(peer, channel, CMD_.GETR_CHANNEL_FTS);
 	this.updateStr = function () {
 		this.container.updateStr(trans.get(317));
 		this.start.updateStr(trans.get(309), null);

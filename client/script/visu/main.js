@@ -80,16 +80,21 @@ function Monitor() {
 	];
 	this.device_kind_list = [
 		{name: "no", value:0},
-		{name: "MAX6675", value:1},
-		{name: "MAX31855", value:2},
-		{name: "DS18B20", value:3},
-		{name: "SPWM", value:4},
-		{name: "HPWM", value:5},
-		{name: "DHT22", value:6},
-		{name: "DHT22T", value:7},
-		{name: "DHT22H", value:8},
-		{name: "TIMER", value:9},
-		{name: "DS3231", value:10}
+		{name: "DSERIAL", value:1},
+		{name: "MAX6675", value:2},
+		{name: "MAX31855", value:3},
+		{name: "DS18B20", value:4},
+		{name: "SPWM", value:5},
+		{name: "HPWM", value:6},
+		{name: "DHT22", value:7},
+		{name: "DHT22T", value:8},
+		{name: "DHT22H", value:9},
+		{name: "DS3231", value:10},
+		{name: "TIMER", value:11},
+		{name: "INDICATOR", value:12},
+		{name: "DS3231", value:13},
+		{name: "MAX7219", value:14},
+		{name: "TM1637", value:15}
 	];
 	this.yn_list = [
 		{name: "YES", value:1},
