@@ -15,7 +15,7 @@ var CMD_ = {
 
 	SET_APP_SERIAL_RATE:0,
 	SET_APP_SERIAL_CONFIG:0,
-	SET_APP_SERIAL_KIND:0,
+	SET_APP_SERIAL_MODE:0,
 
 	GET_APP_VARIABLES:0,
 
@@ -26,7 +26,7 @@ var CMD_ = {
 
 	GET_APP_SERIAL_RATE:0,
 	GET_APP_SERIAL_CONFIG:0,
-	GET_APP_SERIAL_KIND:0,
+	GET_APP_SERIAL_MODE:0,
 
 //====================CHANNEL==================================================
 	CHANNEL_START:0,

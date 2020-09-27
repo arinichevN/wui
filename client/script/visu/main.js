@@ -63,11 +63,12 @@ function Monitor() {
 		{name: "Serial2", value:3},
 		{name: "Serial3", value:4},
 	];
-	this.skind_list = [
+	this.smode_list = [
 		{name: "IDLE", value:0},
 		{name: "SERVER", value:1},
 		{name: "CLIENT", value:2},
-		{name: "DEBUG", value:3}
+		{name: "DEBUG", value:3},
+		{name: "SPY", value:4}
 	];
 	this.regmode_list = [
 		{name: "HEATER", value:1},
@@ -136,7 +137,7 @@ function Monitor() {
 		this.regG = new RegGroup(this.peer, this.channel, this.regmethod_list, this.regmode_list);
 		this.commonG = new CommonGroup(this.peer, this.channel, this.yn_list);
 		this.channelG = new ChannelGroup(this.peer, this.channel, this.yn_list, this.device_kind_list);
-		this.appG = new AppGroup(this.peer, this.app, this.sdev_list, this.srate_list, this.sconf_list, this.skind_list, this.yn_list);
+		this.appG = new AppGroup(this.peer, this.app, this.sdev_list, this.srate_list, this.sconf_list, this.smode_list, this.yn_list);
 		this.secureG = new SecureGroup(this.peer, this.channel, this.yn_list);
 		this.emG = new EMGroup(this.peer, this.channel, this.sdev_list);
 		this.sensorG = new SensorGroup(this.peer, this.channel, this.sdev_list);

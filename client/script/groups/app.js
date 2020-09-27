@@ -1,4 +1,4 @@
-function AppGroup(peer, channel, sdev_list, srate_list, sconfig_list, skind_list, senable_list) {
+function AppGroup(peer, channel, sdev_list, srate_list, sconfig_list, smode_list, senable_list) {
 	this.container = new GroupElem();
 	this.new_id = new ParamElemBrGSInt(peer, CMD_.GET_APP_ID, CMD_.SET_APP_ID, INT16_MIN, INT16_MAX);
 	this.fchannel = new ParamElemGSInt(peer, channel, CMD_.GET_APP_CHANNEL_ID_FIRST, CMD_.SET_APP_CHANNEL_ID_FIRST, INT16_MIN, INT16_MAX);
@@ -8,7 +8,7 @@ function AppGroup(peer, channel, sdev_list, srate_list, sconfig_list, skind_list
 	this.step_del = new ParamElemSInt(peer, channel, CMD_.APP_STEP_DELETE, INT16_MIN, INT16_MAX);
 	this.state = new ParamElemGStr(peer, channel, CMD_.GET_APP_STATE);
 	this.err = new ParamElemGStr(peer, channel, CMD_.GET_APP_ERROR);
-	this.serial = new SerialGroup(peer, channel, sdev_list, srate_list, sconfig_list, skind_list, senable_list);
+	this.serial = new SerialGroup(peer, channel, sdev_list, srate_list, sconfig_list, smode_list, senable_list);
 	
 	this.updateStr = function () {
 		this.container.updateStr(trans.get(334));
