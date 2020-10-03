@@ -1,12 +1,13 @@
-function SelectElem(items, sz, style, vpt){
+function SelectElem(descr_id, items, sz, style, vpt){
+	this.descr_id = descr_id;
 	this.vpt = vpt;
-	this.container = c("select");	
+	this.container = c("select");
 	s(this.container, "size", sz);
 	this.items = items;
 	this.value = null;
     
-    this.updateStr = function (v) {
-		this.container.title = v;
+    this.updateStr = function () {
+		this.container.title = trans.get(this.descr_id);
     };
     for(var i=0;i<items.length;i++){
 		var o = c("option");

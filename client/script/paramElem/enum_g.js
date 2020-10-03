@@ -1,6 +1,7 @@
-function ParamElemGEnum(peer, channel, cmd_get, list) {
-	this.channel = channel;
+function ParamElemGEnum(peer, channel, descr_id, cmd_get, list) {
 	this.peer = peer;
+	this.channel = channel;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.container = cd();
     this.descrE = cd();
@@ -8,17 +9,20 @@ function ParamElemGEnum(peer, channel, cmd_get, list) {
     this.valE = new EnumElem(list, "pr_idelem");
     this.blink_tm = 200;
    
+    this.cmdd = new CommandDetector(peer, [{elem: this.valE, commands: [this.cmd_get]}]);
+    
     this.ACTION =
 		{
-			GET: 1
+			GET: 1,
+			CHECK_CMD: 5
 		};
-    this.updateStr = function (descr) {
-		this.descrE.innerHTML = descr;
+    this.updateStr = function () {
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.valE.updateStr(trans.get(313));
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_GET, this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],

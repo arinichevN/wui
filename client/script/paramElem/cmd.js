@@ -1,6 +1,8 @@
-function ParamElemSCmd(peer, channel, cmd, protect) {
+function ParamElemSCmd(peer, channel, descr_id, title_id, cmd, protect) {
 	this.channel = channel;
 	this.peer = peer;
+	this.descr_id = descr_id;
+	this.title_id = title_id;
 	this.cmd = cmd;
 	this.container = cd();
 	
@@ -9,12 +11,12 @@ function ParamElemSCmd(peer, channel, cmd, protect) {
 		{
 			SET: 1
 		};
-    this.updateStr = function (descr, title) {
-		this.setB.updateStr(descr, title);
+    this.updateStr = function () {
+		this.setB.updateStr(trans.get(this.descr_id), trans.get(this.title_id));
 	};
 	this.sendRequest = function (me) {
 		if(me.channel.id === null || me.peer.port === null || me.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(me.cmd, me.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_SET, me.cmd, me.channel.id );
         var data = [
             {
                 action: ['set_data'],
@@ -48,6 +50,7 @@ function ParamElemSCmd(peer, channel, cmd, protect) {
 	};
 	var self = this;
     this.setB = new BtnProt(self, self.sendRequest, "pr_btnprot", protect);
+    this.cmdd = new CommandDetector(peer, [{elem: this.setB, commands: [this.cmd]}]);
 	a(this.container, [this.setB]);
 	cla(this.container, ["pr"]);
 	cla([this.setB],["pr_button"]);

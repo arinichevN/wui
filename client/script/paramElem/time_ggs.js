@@ -1,6 +1,7 @@
-function ParamElemGGSTime(peer, channel, cmd_get, cmd_getr, cmd_set) {
-	this.channel = channel;
+function ParamElemGGSTime(peer, channel, descr_id, cmd_get, cmd_getr, cmd_set) {
 	this.peer = peer;
+	this.channel = channel;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.cmd_getr = cmd_getr;
 	this.cmd_set = cmd_set;
@@ -30,17 +31,22 @@ function ParamElemGGSTime(peer, channel, cmd_get, cmd_getr, cmd_set) {
     
     this.nowB = cb("");
     this.setB = cb("");
-    
+    this.cmdd = new CommandDetector(peer, [
+	    {elem: this.ramE, commands: [this.cmd_getr]},
+	    {elem: this.nvramE, commands: [this.cmd_get]},
+	    {elem: this.setB, commands: [this.cmd_set]}
+    ]);
     this.blink_tm = 200;
 
     this.ACTION =
 		{
 			SET: 1,
 			GET: 2,
-			GETR: 3
+			GETR: 3,
+			CHECK_CMD: 5
 		};
-    this.updateStr = function (descr) {
-		this.descrE.innerHTML = descr;
+    this.updateStr = function () {
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.nvramE.title = trans.get(314);
 		this.ramE.title = trans.get(313);
 		this.hE.title = trans.get(381);
@@ -59,7 +65,7 @@ function ParamElemGGSTime(peer, channel, cmd_get, cmd_getr, cmd_set) {
 	};
 	this._sendRequestGet = function (action, command) {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(command, this.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_GET, command, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -86,7 +92,7 @@ function ParamElemGGSTime(peer, channel, cmd_get, cmd_getr, cmd_set) {
 		if(isNaN(s) || s < 0 || s > 59) {console.warn("bad second"); this.updateElemBad(this.sE); good_param = false;}
 		if(!good_param) return;
 		var v = this.SECONDS_IN_HOUR * h + this.SECONDS_IN_MINUTE * m + s;
-		var pack = acp_buildRequestIII(this.cmd_set, this.channel.id, v);
+		var pack = acp_buildRequestIII(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel.id, v);
         var data = [
             {
                 action: ['set_data'],

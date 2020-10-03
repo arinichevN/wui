@@ -1,31 +1,37 @@
-function ParamElemGSEnum2(peer, channel1, channel2, cmd_get, cmd_set, list) {
+function ParamElemGSEnum2(peer, channel1, channel2, descr_id, cmd_get, cmd_set, list) {
+	this.peer = peer;
 	this.channel1 = channel1;
 	this.channel2 = channel2;
-	this.peer = peer;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.cmd_set = cmd_set;
 	this.container = cd();
     this.descrE = cd();
     this.UNKNOWN_STR = "&empty;";
     this.nvramE = new EnumElem(list, "pr_getelem");
-    this.setE = new SelectElem(list, 1, "pr_setelem", null);
+    this.setE = new SelectElem(300, list, 1, "pr_setelem5", null);
     this.setB = cb("");
+    this.cmdd = new CommandDetector(peer, [
+	    {elem: this.nvramE, commands: [this.cmd_get]},
+	    {elem: this.setB, commands: [this.cmd_set]}
+    ]);
     this.blink_tm = 200;
     this.ACTION =
 		{
 			GET: 1,
-			SET: 3
+			SET: 3,
+			CHECK_CMD: 5
 		};
-    this.updateStr = function (descr) {
-		this.descrE.innerHTML = descr;
+    this.updateStr = function () {
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.nvramE.updateStr(trans.get(314));
-		//this.setE.title = trans.get(300);
+		this.setE.updateStr();
 		this.setB.innerHTML = trans.get(304);
 		this.setB.title = trans.get(306);
 	};
 	this.sendRequestGet = function () {
 		if(this.channel1.id === null || this.channel2.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestIII(this.cmd_get, this.channel1.id, this.channel2.id );
+		var pack = acp_buildRequestIII(ACPP_SIGN_REQUEST_GET, this.cmd_get, this.channel1.id, this.channel2.id );
         var data = [
             {
                 action: ['get_data'],
@@ -39,7 +45,7 @@ function ParamElemGSEnum2(peer, channel1, channel2, cmd_get, cmd_set, list) {
 		if(this.channel1.id === null || this.channel2.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
 		var v = this.setE.getValue();
 		if(v === null) return;
-		var pack = acp_buildRequestIIII(this.cmd_set, this.channel1.id, this.channel2.id, v);
+		var pack = acp_buildRequestIIII(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel1.id, this.channel2.id, v);
         var data = [
             {
                 action: ['set_data'],
@@ -117,6 +123,5 @@ function ParamElemGSEnum2(peer, channel1, channel2, cmd_get, cmd_set, list) {
 	cla(this.container, ["pr"]);
 	cla(this.descrE, ["pr_descr"]);
 	cla([this.nvramE],["pr_getelem"]);
-	cla([this.setE],["pr_setelem"]);
 	cla([this.setB],["pr_button"]);
 }

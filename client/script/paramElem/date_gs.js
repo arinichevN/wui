@@ -1,6 +1,7 @@
-function ParamElemGSDate(peer, channel, cmd_get, cmd_set) {
+function ParamElemGSDate(peer, channel, descr_id, cmd_get, cmd_set) {
 	this.channel = channel;
 	this.peer = peer;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.cmd_set = cmd_set;
 	this.container = cd();
@@ -29,15 +30,21 @@ function ParamElemGSDate(peer, channel, cmd_get, cmd_set) {
     this.setB = cb("");
     this.nowB = cb("");
     
+    this.cmdd = new CommandDetector(peer, [
+	    {elem: this.nvramE, commands: [this.cmd_get]},
+	    {elem: this.setB, commands: [this.cmd_set]}
+    ]);
+    
     this.blink_tm = 200;
 
     this.ACTION =
 		{
 			GET: 1,
-			SET: 2
+			SET: 2,
+			CHECK_CMD: 5
 		};
     this.updateStr = function (descr) {
-		this.descrE.innerHTML = descr;
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.nvramE.title = trans.get(314);
 		this.yE.title = trans.get(378);
 		this.mE.title = trans.get(379);
@@ -49,7 +56,7 @@ function ParamElemGSDate(peer, channel, cmd_get, cmd_set) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_GET, this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -92,7 +99,7 @@ function ParamElemGSDate(peer, channel, cmd_get, cmd_set) {
 		if(isNaN(d) || d < 1 || d > this.getMaxDaysInMonth(y, m)) {console.warn("bad day"); this.updateElemBad(this.dE); good_param = false;}
 		if(!good_param) return;
 		var v = this.DAYS_IN_YEAR * (y-2000) + this.DAYS_IN_MONTH * m + d;
-		var pack = acp_buildRequestIII(this.cmd_set, this.channel.id, v);
+		var pack = acp_buildRequestIII(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel.id, v);
         var data = [
             {
                 action: ['set_data'],

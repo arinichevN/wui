@@ -1,22 +1,13 @@
-function ParamElemSInt(peer, channel, descr_id, cmd_set, min_v, max_v) {
+function ParamElemSStr(peer, channel, descr_id, cmd_set) {
 	this.peer = peer;
 	this.channel = channel;
 	this.descr_id = descr_id;
 	this.cmd_set = cmd_set;
+	
 	this.container = cd();
     this.descrE = cd();
     this.setE = c("input");
-    this.setE.type = "number";
-    this.setE.min = min_v;
-    this.setE.max = max_v;
-    this.min_v = min_v;
-    this.max_v = max_v;
-    if(min_v < 0){
-		this.setE.value = 0;
-	}else{
-		this.setE.value = min_v;
-	}
-    
+    this.setE.type = "text";
     this.setB = cb("");
     this.cmdd = new CommandDetector(peer, [
 	    {elem: this.setB, commands: [this.cmd_set]}
@@ -35,10 +26,9 @@ function ParamElemSInt(peer, channel, descr_id, cmd_set, min_v, max_v) {
 	};
     this.sendRequestSet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var v = parseInt(this.setE.value);
-		if(isNaN(v)){return;}
-		if(v < this.min_v || v > this.max_v) return;
-		var pack = acp_buildRequestIII(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel.id, v);
+		var v1 = this.setE.value;
+		var v2 = acp_secureStr(v1); console.log(v1, v2);
+		var pack = acp_buildRequestIIS(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel.id, v2);
         var data = [
             {
                 action: ['set_data'],

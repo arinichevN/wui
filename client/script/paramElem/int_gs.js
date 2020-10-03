@@ -1,6 +1,7 @@
-function ParamElemGSInt(peer, channel, cmd_get, cmd_set, min_v, max_v) {
-	this.channel = channel;
+function ParamElemGSInt(peer, channel, descr_id, cmd_get, cmd_set, min_v, max_v) {
 	this.peer = peer;
+	this.channel = channel;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.cmd_set = cmd_set;
 	this.container = cd();
@@ -20,14 +21,19 @@ function ParamElemGSInt(peer, channel, cmd_get, cmd_set, min_v, max_v) {
 		this.setE.value = min_v;
 	}
     this.setB = cb("");
+    this.cmdd = new CommandDetector(peer, [
+	    {elem: this.getE, commands: [this.cmd_get]},
+	    {elem: this.setB, commands: [this.cmd_set]}
+    ]);
     this.blink_tm = 200;
     this.ACTION =
 		{
 			GET: 1,
-			SET: 3
+			SET: 3,
+			CHECK_CMD: 5
 		};
-    this.updateStr = function (descr) {
-		this.descrE.innerHTML = descr;
+    this.updateStr = function () {
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.getE.title = trans.get(335);
 		this.setE.title = trans.get(300);
 		this.setB.innerHTML = trans.get(304);
@@ -35,7 +41,7 @@ function ParamElemGSInt(peer, channel, cmd_get, cmd_set, min_v, max_v) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_GET, this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -50,7 +56,7 @@ function ParamElemGSInt(peer, channel, cmd_get, cmd_set, min_v, max_v) {
 		var v = parseInt(this.setE.value);
 		if(isNaN(v)){return;}
 		if(v < this.min_v || v > this.max_v) return;
-		var pack = acp_buildRequestIII(this.cmd_set, this.channel.id, v);
+		var pack = acp_buildRequestIII(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel.id, v);
         var data = [
             {
                 action: ['set_data'],

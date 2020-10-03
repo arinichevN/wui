@@ -1,6 +1,7 @@
-function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
-	this.channel = channel;
+function ParamElemGGSFloat(peer, channel, descr_id, cmd_get, cmd_getr, cmd_set) {
 	this.peer = peer;
+	this.channel = channel;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.cmd_getr = cmd_getr;
 	this.cmd_set = cmd_set;
@@ -18,14 +19,20 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
     this.setE.value = 0;
     this.blink_tm = 200;
     this.precision = 3;
+    this.cmdd = new CommandDetector(peer, [
+	    {elem: this.ramE, commands: [this.cmd_getr]},
+	    {elem: this.nvramE, commands: [this.cmd_get]},
+	    {elem: this.setB, commands: [this.cmd_set]}
+    ]);
     this.ACTION =
 		{
 			GET: 1,
 			GETR:2,
-			SET: 3
+			SET: 3,
+			CHECK_CMD: 5
 		};
-    this.updateStr = function (descr) {
-		this.descrE.innerHTML = descr;
+    this.updateStr = function () {
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.ramE.title = trans.get(313);
 		this.nvramE.title = trans.get(314);
 		this.setE.title = trans.get(300);
@@ -45,7 +52,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
 	};
 	this.sendRequestGet = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(this.cmd_get, this.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_GET, this.cmd_get, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -57,7 +64,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
     };
     this.sendRequestGetr = function () {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestII(this.cmd_getr, this.channel.id );
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_GET, this.cmd_getr, this.channel.id );
         var data = [
             {
                 action: ['get_data'],
@@ -71,7 +78,7 @@ function ParamElemGGSFloat(peer, channel, cmd_get, cmd_getr, cmd_set) {
 		if(this.channel.id === null || this.peer.port === null || this.peer.ipaddr === null) return;
 		var v = parseFloat(this.setE.value);
 		if(isNaN(v) || !isFinite(v)){return;}
-		var pack = acp_buildRequestIIF(this.cmd_set, this.channel.id, v, this.precision);
+		var pack = acp_buildRequestIIF(ACPP_SIGN_REQUEST_SET, this.cmd_set, this.channel.id, v, this.precision);
         var data = [
             {
                 action: ['set_data'],

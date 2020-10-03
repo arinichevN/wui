@@ -115,12 +115,39 @@ trans.addDict([
 	
 	{id: 397, str: ["now",  "сейчас"]},
 	{id: 398, str: ["paste current date",  "вставить текущую дату"]},
-	{id: 399, str: ["paste current time",  "вставить текущее время"]}
+	{id: 399, str: ["paste current time",  "вставить текущее время"]},
+	{id: 400, str: ["Kp",  "Kp"]},
+	{id: 401, str: ["Ki",  "Ki"]},
+	{id: 402, str: ["Kd",  "Kd"]},
+	
+	{id: 403, str: ["text indicator",  "текстовый индикатор"]},
+	{id: 404, str: ["text",  "текст"]},
+	{id: 405, str: ["blinking text",  "мигающий текст"]},
+	{id: 406, str: ["display kind",  "тип дисплея"]},
+	{id: 407, str: ["pin 1",  "пин 1"]},
+	{id: 408, str: ["pin 2",  "пин 2"]},
+	{id: 409, str: ["pin 3",  "пин 3"]},
+	{id: 410, str: ["text alignment",  "выравнивание текста"]},
+	{id: 411, str: ["UART id",  "идентификатор UART"]},
+	{id: 412, str: ["mode",  "режим"]},
+	{id: 413, str: ["remote id",  "идентификатор"]},
+	{id: 414, str: ["ACP command",  "команда ACP"]},
+	{id: 415, str: ["time",  "время"]},
+	
+	{id: 416, str: ["get channels",  "получить каналы"]},
+	{id: 417, str: ["check commands",  "проверить команды"]},
+	
+	{id: 418, str: ["reset",  "перезапустить"]},
+	
+	{id: 419, str: ["float precision",  "точность вещ."]},
+	{id: 420, str: ["get supported commands",  "получить поддерживаемые команды"]},
+	
+	{id: 421, str: ["show all",  "показать все"]},
     
 ]);
 //menu
 trans.addDict([
-    {id: 401, str: ["configuration","конфигурация"]}
+    {id: 1001, str: ["configuration","конфигурация"]}
 ]);
 
 //error

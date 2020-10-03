@@ -1,31 +1,40 @@
 var ACPP_DELIMITER_START=	"<";
 var ACPP_DELIMITER_COLUMN=	";";
 var ACPP_DELIMITER_END=		">";
-var ACPP_SIGN_RESPONSE=		"!";
-var ACPP_SIGN_REQUEST=		"?";
 
-function acp_buildRequestI(v1){
-	var out = ACPP_DELIMITER_START + ACPP_SIGN_REQUEST + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_END;
+var ACPP_SIGN_REQUEST_GET=				'?'
+var ACPP_SIGN_REQUEST_SET=				'&'
+var ACPP_SIGN_REQUEST_GET_BROADCAST=		'*'
+var ACPP_SIGN_REQUEST_SET_BROADCAST=		'#'
+var ACPP_SIGN_RESPONSE=					'!'
+
+function acp_buildRequestI(sign, v1){
+	var out = ACPP_DELIMITER_START + sign + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_END;
 	return out;
 }
 
-function acp_buildRequestII(v1, v2){
-	var out = ACPP_DELIMITER_START + ACPP_SIGN_REQUEST + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_END;
+function acp_buildRequestII(sign, v1, v2){
+	var out = ACPP_DELIMITER_START + sign + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_END;
 	return out;
 }
 
-function acp_buildRequestIII(v1, v2, v3){
-	var out = ACPP_DELIMITER_START + ACPP_SIGN_REQUEST + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3 + ACPP_DELIMITER_END;
+function acp_buildRequestIII(sign, v1, v2, v3){
+	var out = ACPP_DELIMITER_START + sign + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3 + ACPP_DELIMITER_END;
 	return out;
 }
 
-function acp_buildRequestIIII(v1, v2, v3, v4){
-	var out = ACPP_DELIMITER_START + ACPP_SIGN_REQUEST + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3 + ACPP_DELIMITER_COLUMN + v4 + ACPP_DELIMITER_END;
+function acp_buildRequestIIII(sign, v1, v2, v3, v4){
+	var out = ACPP_DELIMITER_START + sign + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3 + ACPP_DELIMITER_COLUMN + v4 + ACPP_DELIMITER_END;
 	return out;
 }
 
-function acp_buildRequestIIF(v1, v2, v3, precision){
-	var out = ACPP_DELIMITER_START + ACPP_SIGN_REQUEST + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3.toFixed(precision) + ACPP_DELIMITER_END;
+function acp_buildRequestIIF(sign, v1, v2, v3, precision){
+	var out = ACPP_DELIMITER_START + sign + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3.toFixed(precision) + ACPP_DELIMITER_END;
+	return out;
+}
+
+function acp_buildRequestIIS(sign, v1, v2, v3){
+	var out = ACPP_DELIMITER_START + sign + ACPP_DELIMITER_COLUMN + v1 + ACPP_DELIMITER_COLUMN + v2 + ACPP_DELIMITER_COLUMN + v3 + ACPP_DELIMITER_END;
 	return out;
 }
 
@@ -92,6 +101,27 @@ function acp_buildCommands(){
 	}
 }
 
+function acp_secureStr(str){
+	var out = '';
+	for(var i = 0; i<str.length;i++){
+		var c = str.charAt(i);
+		switch(c){
+			case ACPP_DELIMITER_START:
+			case ACPP_DELIMITER_COLUMN:
+			case ACPP_DELIMITER_END:
+			case ACPP_SIGN_REQUEST_GET:
+			case ACPP_SIGN_REQUEST_SET:
+			case ACPP_SIGN_REQUEST_GET_BROADCAST:
+			case ACPP_SIGN_REQUEST_SET_BROADCAST:
+			case ACPP_SIGN_RESPONSE:
+				out += " ";
+				continue;
+		}
+		out += c;
+	}
+	return out;
+};
+	
 function acp_init(){
 	acp_buildCommands();
 }

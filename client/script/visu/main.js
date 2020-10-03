@@ -9,98 +9,14 @@ function Monitor() {
     this.update = true; //editor will make it false
     this.visible = false;
     this.peer = {port:null, ipaddr:null};
-    this.channel = {id:null};
-    this.app = {id:null};
+    this.channel = {id:null, elem: null};
+    this.app = {id:null, elem:null};
     this.port = null;
     this.ipaddrE = null;
     this.portE = null;
-    this.idE = null;
-    this.idaE = null;
     this.textE = null;
-	this.srate_list = [
-		{name: "300", value:1},
-		{name: "1200", value:2},
-		{name: "2400", value:3},
-		{name: "4800", value:4},
-		{name: "9600", value:5},
-		{name: "14400", value:6},
-		{name: "19200", value:7},
-		{name: "28800", value:8},
-		{name: "38400", value:9},
-		{name: "57600", value:10},
-		{name: "115200", value:11}
-	];
-	this.sconf_list = [
-		{name: "5N1", value: 0x00},
-		{name: "6N1", value: 0x02},
-		{name: "7N1", value: 0x04},
-		{name: "8N1", value: 0x06},
-		{name: "5N2", value: 0x08},
-		{name: "6N2", value: 0x0A},
-		{name: "7N2", value: 0x0C},
-		{name: "8N2", value: 0x0E},
-		{name: "5E1", value: 0x20},
-		{name: "6E1", value: 0x22},
-		{name: "7E1", value: 0x24},
-		{name: "8E1", value: 0x26},
-		{name: "5E2", value: 0x28},
-		{name: "6E2", value: 0x2A},
-		{name: "7E2", value: 0x2C},
-		{name: "8E2", value: 0x2E},
-		{name: "5O1", value: 0x30},
-		{name: "6O1", value: 0x32},
-		{name: "7O1", value: 0x34},
-		{name: "8O1", value: 0x36},
-		{name: "5O2", value: 0x38},
-		{name: "6O2", value: 0x3A},
-		{name: "7O2", value: 0x3C},
-		{name: "8O2", value: 0x3E}
-	];
-	this.sdev_list = [
-		{name: "no", value:0},
-		{name: "Serial", value:1},
-		{name: "Serial1", value:2},
-		{name: "Serial2", value:3},
-		{name: "Serial3", value:4},
-	];
-	this.smode_list = [
-		{name: "IDLE", value:0},
-		{name: "SERVER", value:1},
-		{name: "CLIENT", value:2},
-		{name: "DEBUG", value:3},
-		{name: "SPY", value:4}
-	];
-	this.regmode_list = [
-		{name: "HEATER", value:1},
-		{name: "COOLER", value:0}
-	];
-	this.regmethod_list = [
-		{name: "PID", value:0},
-		{name: "Pos2", value:1},
-		{name: "Pos1", value:2}
-	];
-	this.device_kind_list = [
-		{name: "no", value:0},
-		{name: "DSERIAL", value:1},
-		{name: "MAX6675", value:2},
-		{name: "MAX31855", value:3},
-		{name: "DS18B20", value:4},
-		{name: "SPWM", value:5},
-		{name: "HPWM", value:6},
-		{name: "DHT22", value:7},
-		{name: "DHT22T", value:8},
-		{name: "DHT22H", value:9},
-		{name: "DS3231", value:10},
-		{name: "TIMER", value:11},
-		{name: "INDICATOR", value:12},
-		{name: "DS3231", value:13},
-		{name: "MAX7219", value:14},
-		{name: "TM1637", value:15}
-	];
-	this.yn_list = [
-		{name: "YES", value:1},
-		{name: "NO", value:0}
-	];
+    this.showaB = null;
+	this.elements = [];
     this.init = function () {
 		this.container = cvis();
 		this.ipaddrE = c("input");
@@ -109,14 +25,14 @@ function Monitor() {
 	    this.portE = c("input");
 	    this.portE.type = "number";
 	    this.portE.value = this.DEFAULT_PORT;
-	    var self = this;
-	    this.idE = c("input");
-	    this.idE.type = "number";
-	    this.idE.value = this.DEFAULT_CHANNEL_ID;
-	    this.idaE = c("input");
-	    this.idaE.type = "number";
-	    this.idaE.value = this.DEFAULT_APP_ID;
+	    this.channel.elem = c("input");
+	    this.channel.elem.type = "number";
+	    this.channel.elem.value = this.DEFAULT_CHANNEL_ID;
+	    this.app.elem = c("input");
+	    this.app.elem.type = "number";
+	    this.app.elem.value = this.DEFAULT_APP_ID;
 	    this.textE = c('pre');
+	    this.showaB = cb();
 	    var self = this;
 		this.portE.onchange = function(){
 			self.updatePort();
@@ -124,28 +40,127 @@ function Monitor() {
 		this.ipaddrE.onchange = function(){
 			self.updateIPaddr();
 		};
-		this.idE.onchange = function(){
+		this.channel.elem.onchange = function(){
 			self.updateChannel();
 		};
-		this.idaE.onchange = function(){
+		this.app.elem.onchange = function(){
 			self.updateApp();
 		};
-
+		this.showaB.onclick = function(){
+			self.showAllElements();
+		};
 		var pcont = cd();
-		this.pwmG = new PWMGroup(this.peer, this.channel);
-		this.servoG = new ServoGroup(this.peer, this.channel);
-		this.regG = new RegGroup(this.peer, this.channel, this.regmethod_list, this.regmode_list);
-		this.commonG = new CommonGroup(this.peer, this.channel, this.yn_list);
-		this.channelG = new ChannelGroup(this.peer, this.channel, this.yn_list, this.device_kind_list);
-		this.appG = new AppGroup(this.peer, this.app, this.sdev_list, this.srate_list, this.sconf_list, this.smode_list, this.yn_list);
-		this.secureG = new SecureGroup(this.peer, this.channel, this.yn_list);
-		this.emG = new EMGroup(this.peer, this.channel, this.sdev_list);
-		this.sensorG = new SensorGroup(this.peer, this.channel, this.sdev_list);
-		this.rtcG = new RTCGroup(this.peer, this.app);
-		this.timerG = new TimerGroup(this.peer, this.channel);
-		a(pcont, [this.ipaddrE, this.portE, this.idE, this.idaE]);
+		var peer = this.peer;
+		var channel = this.channel;
+		var lapp = this.app;
+		this.elements = [
+			new MainGroup(334, [
+				new ParamElemBrGSInt(peer, 302, CMD_.GET_APP_ID, CMD_.SET_APP_ID, INT16_MIN, INT16_MAX, lapp),
+				//new ParamElemCheckCommands(peer, lapp, this),
+				new ParamElemGetSupportedCommands(peer, lapp, this),
+				new ParamElemGChannels(peer, lapp, channel),
+				new ParamElemSCmd(peer, lapp, 418, null, CMD_.APP_RESET, false),
+				//new ParamElemGSInt(peer, lapp, 337, CMD_.GET_APP_CHANNEL_ID_FIRST, CMD_.SET_APP_CHANNEL_ID_FIRST, INT16_MIN, INT16_MAX),
+				//new ParamElemSInt(peer, lapp, 366, CMD_.APP_CHANNEL_ADD, INT16_MIN, INT16_MAX),
+				//new ParamElemSInt(peer, lapp, 367, CMD_.APP_CHANNEL_DELETE, INT16_MIN, INT16_MAX),
+				//new ParamElemSInt(peer, lapp, 368, CMD_.APP_STEP_ADD, INT16_MIN, INT16_MAX),
+				//new ParamElemSInt(peer, lapp, 369, CMD_.APP_STEP_DELETE, INT16_MIN, INT16_MAX),
+				new ParamElemGStr(peer, lapp, 320, CMD_.GET_APP_STATE),
+				new ParamElemGStr(peer, lapp, 319, CMD_.GET_APP_ERROR),
+				new SerialGroup(peer, lapp, 330)
+			]),
+			new MainGroup(317, [
+				new ParamElemSCmd(peer, channel, 309, null, CMD_.CHANNEL_START, false),
+				new ParamElemSCmd(peer, channel, 310, null, CMD_.CHANNEL_STOP, false),
+				new ParamElemSCmd(peer, channel, 311, null, CMD_.CHANNEL_RELOAD, false),
+				new ParamElemGGSEnum(peer, channel, 374, CMD_.GET_CHANNEL_DEVICE_KIND, CMD_.GETR_CHANNEL_DEVICE_KIND, CMD_.SET_CHANNEL_DEVICE_KIND, device_kind_list),
+				new ParamElemGGSInt(peer, channel, 394, CMD_.GET_CHANNEL_PIN, CMD_.GETR_CHANNEL_PIN, CMD_.SET_CHANNEL_PIN, INT16_MIN, INT16_MAX),
+				new ParamElemGGSFloat(peer, channel, 322, CMD_.GET_CHANNEL_GOAL, CMD_.GETR_CHANNEL_GOAL, CMD_.SET_CHANNEL_GOAL),
+				new ParamElemGGSEnum(peer, channel, 360, CMD_.GET_CHANNEL_SAVE_GOAL, CMD_.GETR_CHANNEL_SAVE_GOAL, CMD_.SET_CHANNEL_SAVE_GOAL, yn_list),
+				new ParamElemGStr(peer, channel, 320, CMD_.GETR_CHANNEL_STATE),
+				new ParamElemGStr(peer, channel, 319, CMD_.GETR_CHANNEL_ERROR),
+				new ParamElemGFTS(peer, channel, 318, CMD_.GETR_CHANNEL_FTS)
+			]),
+			new MainGroup(350, [
+				new ParamElemGGSInt(peer, channel, 351, CMD_.GET_PWM_RESOLUTION, CMD_.GETR_PWM_RESOLUTION, CMD_.SET_PWM_RESOLUTION, 0, INT32_MAX),
+				new ParamElemGGSInt(peer, channel, 375, CMD_.GET_PWM_PERIOD, CMD_.GETR_PWM_PERIOD, CMD_.SET_PWM_PERIOD, 0, INT32_MAX),
+				new ParamElemGGSInt(peer, channel, 376, CMD_.GET_PWM_PW_MIN, CMD_.GETR_PWM_PW_MIN, CMD_.SET_PWM_PW_MIN, 0, INT32_MAX),
+				new ParamElemGGSInt(peer, channel, 377, CMD_.GET_PWM_PW_MAX, CMD_.GETR_PWM_PW_MAX, CMD_.SET_PWM_PW_MAX, 0, INT32_MAX)
+			]),
+			new MainGroup(365, [
+				new ParamElemGGSInt(peer, channel, 361, CMD_.GET_SERVO_PW_MIN, CMD_.GETR_SERVO_PW_MIN, CMD_.SET_SERVO_PW_MIN, 0, INT32_MAX),
+				new ParamElemGGSInt(peer, channel, 362, CMD_.GET_SERVO_PW_MAX, CMD_.GETR_SERVO_PW_MAX, CMD_.SET_SERVO_PW_MAX, 0, INT32_MAX),
+				new ParamElemGGSFloat(peer, channel, 363, CMD_.GET_SERVO_IN_MIN, CMD_.GETR_SERVO_IN_MIN, CMD_.SET_SERVO_IN_MIN),
+				new ParamElemGGSFloat(peer, channel, 364, CMD_.GET_SERVO_IN_MAX, CMD_.GETR_SERVO_IN_MAX, CMD_.SET_SERVO_IN_MAX)
+			]),
+			new MainGroup(345, [
+				new MainGroup(356, [
+					new ParamElemGGSEnum(peer, channel, 347, CMD_.GET_PID_MODE, CMD_.GETR_PID_MODE, CMD_.SET_PID_MODE, regmode_list),
+					new ParamElemGGSFloat(peer, channel, 400, CMD_.GET_PID_KP, CMD_.GETR_PID_KP, CMD_.SET_PID_KP, 0, INT32_MAX),
+					new ParamElemGGSFloat(peer, channel, 401, CMD_.GET_PID_KI, CMD_.GETR_PID_KI, CMD_.SET_PID_KI, 0, INT32_MAX),
+					new ParamElemGGSFloat(peer, channel, 402, CMD_.GET_PID_KD, CMD_.GETR_PID_KD, CMD_.SET_PID_KD, 0, INT32_MAX),
+					new ParamElemGGSFloat(peer, channel, 372, CMD_.GET_PID_OUT_MIN, CMD_.GETR_PID_OUT_MIN, CMD_.SET_PID_OUT_MIN, 0, INT32_MAX),
+					new ParamElemGGSFloat(peer, channel, 373, CMD_.GET_PID_OUT_MAX, CMD_.GETR_PID_OUT_MAX, CMD_.SET_PID_OUT_MAX, 0, INT32_MAX),
+				]),
+				new MainGroup(357, [
+					new ParamElemGGSEnum(peer, channel, 347, CMD_.GET_POS2_MODE, CMD_.GETR_POS2_MODE, CMD_.SET_POS2_MODE, regmode_list),
+					new ParamElemGGSFloat(peer, channel, 355, CMD_.GET_POS2_HYS, CMD_.GETR_POS2_HYS, CMD_.SET_POS2_HYS, 0, INT32_MAX),
+					new ParamElemGGSInt(peer, channel, 348, CMD_.GET_POS2_OUT_MIN, CMD_.GETR_POS2_OUT_MIN, CMD_.SET_POS2_OUT_MIN, 0, INT32_MAX),
+					new ParamElemGGSInt(peer, channel, 349, CMD_.GET_POS2_OUT_MAX, CMD_.GETR_POS2_OUT_MAX, CMD_.SET_POS2_OUT_MAX, 0, INT32_MAX),
+				]),
+			]),
+			new MainGroup(358, [
+				new ParamElemGEnum(peer, channel, 323, CMD_.GET_ID_EXISTS, yn_list)
+			]),
+			new MainGroup(340, [
+				new ParamElemGGSEnum(peer, channel, 321, CMD_.GET_SEC_ENABLE, CMD_.GETR_SEC_ENABLE, CMD_.SET_SEC_ENABLE, yn_list),
+				new ParamElemGGSInt(peer, channel, 338, CMD_.GET_SEC_TM, CMD_.GETR_SEC_TM, CMD_.SET_SEC_TM, 0, INT32_MAX),
+				new ParamElemGGSFloat(peer, channel, 339, CMD_.GET_SEC_OUT, CMD_.GETR_SEC_OUT, CMD_.SET_SEC_OUT, 0, INT32_MAX),
+				new ParamElemGStr(peer, channel, 320, CMD_.GETR_SEC_STATE)
+			]),
+			new MainGroup(341, [
+				new ParamElemGGSInt(peer, channel,302, CMD_.GET_REM_ID, CMD_.GETR_REM_ID, CMD_.SET_REM_ID, INT16_MIN, INT16_MAX),
+				new ParamElemGGSInt(peer, channel,342, CMD_.GET_REM_INTERVAL, CMD_.GETR_REM_INTERVAL, CMD_.SET_REM_INTERVAL, 0, INT32_MAX),
+				new ParamElemGGSEnum(peer, channel, 343, CMD_.GET_REM_SERIAL, CMD_.GETR_REM_SERIAL, CMD_.SET_REM_SERIAL, sdev_list),
+				new ParamElemGStr(peer, channel, 320, CMD_.GETR_REM_STATE),
+				new ParamElemGStr(peer, channel, 319, CMD_.GETR_REM_ERROR)
+			]),
+			new MainGroup(344, [
+				new ParamElemGGSInt(peer, channel, 302, CMD_.GET_RSENSOR_ID, CMD_.GETR_RSENSOR_ID, CMD_.SET_RSENSOR_ID, INT16_MIN, INT16_MAX),
+				new ParamElemGGSInt(peer, channel, 342, CMD_.GET_RSENSOR_INTERVAL, CMD_.GETR_RSENSOR_INTERVAL, CMD_.SET_RSENSOR_INTERVAL, 0, INT32_MAX),
+				new ParamElemGGSEnum(peer, channel, 343, CMD_.GET_RSENSOR_SERIAL, CMD_.GETR_RSENSOR_SERIAL, CMD_.SET_RSENSOR_SERIAL, sdev_list),
+				new ParamElemGStr(peer, channel, 320, CMD_.GETR_RSENSOR_STATE),
+				new ParamElemGStr(peer, channel, 319, CMD_.GETR_RSENSOR_ERROR)
+			]),
+			new MainGroup(386, [
+				new ParamElemGSDate(peer, lapp, 384, CMD_.GET_RTC_DATE, CMD_.SET_RTC_DATE),
+				new ParamElemGSTime(peer, lapp, 385, CMD_.GET_RTC_TIME, CMD_.SET_RTC_TIME)
+			]),
+			new MainGroup(387, [
+				new ParamElemGGSTime(peer, channel, 388, CMD_.GET_TIMER_TIME_ON, CMD_.GETR_TIMER_TIME_ON, CMD_.SET_TIMER_TIME_ON),
+				new ParamElemGGSTime(peer, channel, 389, CMD_.GET_TIMER_TIME_OFF, CMD_.GETR_TIMER_TIME_OFF, CMD_.SET_TIMER_TIME_OFF),
+				new ParamElemGGSInt(peer, channel,390, CMD_.GET_TIMER_INTERVAL_ON, CMD_.GETR_TIMER_INTERVAL_ON, CMD_.SET_TIMER_INTERVAL_ON, 0, INT32_MAX),
+				new ParamElemGGSInt(peer, channel,391, CMD_.GET_TIMER_INTERVAL_OFF, CMD_.GETR_TIMER_INTERVAL_OFF, CMD_.SET_TIMER_INTERVAL_OFF, 0, INT32_MAX)
+			]),
+			new MainGroup(403, [
+				new ParamElemSStr(peer, channel, 404, CMD_.SET_INDICATOR_TEXT),
+				new ParamElemSStr(peer, channel, 405, CMD_.SET_INDICATOR_TEXT_BLINK),
+				new ParamElemGGSEnum(peer, channel, 406, CMD_.GET_INDICATOR_DISPLAY_KIND, CMD_.GETR_INDICATOR_DISPLAY_KIND, CMD_.SET_INDICATOR_DISPLAY_KIND, display_kind_list),
+				new ParamElemGGSInt(peer, channel, 407, CMD_.GET_INDICATOR_DISPLAY_P1, CMD_.GETR_INDICATOR_DISPLAY_P1, CMD_.SET_INDICATOR_DISPLAY_P1, 0, PIN_MAX),
+				new ParamElemGGSInt(peer, channel, 408, CMD_.GET_INDICATOR_DISPLAY_P2, CMD_.GETR_INDICATOR_DISPLAY_P2, CMD_.SET_INDICATOR_DISPLAY_P2, 0, PIN_MAX),
+				new ParamElemGGSInt(peer, channel, 409, CMD_.GET_INDICATOR_DISPLAY_P3, CMD_.GETR_INDICATOR_DISPLAY_P3, CMD_.SET_INDICATOR_DISPLAY_P3, 0, PIN_MAX),
+				new ParamElemGGSEnum(peer, channel, 410, CMD_.GET_INDICATOR_TEXT_ALIGNMENT, CMD_.GETR_INDICATOR_TEXT_ALIGNMENT, CMD_.SET_INDICATOR_TEXT_ALIGNMENT, text_alignment_list),
+				new ParamElemGGSEnum(peer, channel, 411, CMD_.GET_INDICATOR_SERIAL_ID, CMD_.GETR_INDICATOR_SERIAL_ID, CMD_.SET_INDICATOR_SERIAL_ID, sdev_list),
+				new ParamElemGGSEnum(peer, channel, 412, CMD_.GET_INDICATOR_MODE, CMD_.GETR_INDICATOR_MODE, CMD_.SET_INDICATOR_MODE, smode_list),
+				new ParamElemGGSInt(peer, channel, 413, CMD_.GET_INDICATOR_REMOTE_ID, CMD_.GETR_INDICATOR_REMOTE_ID, CMD_.SET_INDICATOR_REMOTE_ID, 0, PIN_MAX),
+				new ParamElemGGSEnum(peer, channel, 414, CMD_.GET_INDICATOR_ACP_COMMAND, CMD_.GETR_INDICATOR_ACP_COMMAND, CMD_.SET_INDICATOR_ACP_COMMAND, indicator_acp_command_list),
+				new ParamElemGGSInt(peer, channel, 415, CMD_.GET_INDICATOR_TIME, CMD_.GETR_INDICATOR_TIME, CMD_.SET_INDICATOR_TIME, 0, INT32_MAX),
+				new ParamElemGGSInt(peer, channel, 419, CMD_.GET_INDICATOR_FLOAT_PRECISION, CMD_.GETR_INDICATOR_FLOAT_PRECISION, CMD_.SET_INDICATOR_FLOAT_PRECISION, 0, CHANNEL_FLOAT_PRECISION_MAX)
+			])
+		];
+		a(pcont, [this.ipaddrE, this.portE, this.channel.elem, this.app.elem, this.showaB]);
 		a(this.container, [pcont]);
-		a(this.container, [ this.commonG, this.appG, this.channelG, this.pwmG, this.servoG, this.sensorG, this.regG, this.sensorG, this.emG, this.secureG, this.rtcG, this.timerG]);
+		a(this.container, this.elements);
 		a(this.container, [this.textE]);
 		this.initialized = true;
 		this.updatePort();
@@ -157,21 +172,14 @@ function Monitor() {
         return trans.get(401);
     };
     this.updateStr = function () {
-		this.idE.title = trans.get(396);
-		this.idaE.title = trans.get(395);
+		this.channel.elem.title = trans.get(396);
+		this.app.elem.title = trans.get(395);
 		this.portE.title = trans.get(301);
 		this.ipaddrE.title = trans.get(308);
-		this.pwmG.updateStr();
-		this.servoG.updateStr();
-		this.regG.updateStr();
-		this.emG.updateStr();
-		this.sensorG.updateStr();
-		this.secureG.updateStr();
-		this.commonG.updateStr();
-		this.channelG.updateStr();
-		this.appG.updateStr();
-		this.rtcG.updateStr();
-		this.timerG.updateStr();
+		this.showaB.innerHTML = trans.get(421);
+		for(var i = 0; i<this.elements.length; i++){
+			this.elements[i].updateStr();
+		}
     };
     this.updatePort = function(){
 		this.peer.port = this.getInt(this.portE.value);
@@ -180,10 +188,40 @@ function Monitor() {
 		this.peer.ipaddr = this.ipaddrE.value;
 	};
 	this.updateChannel = function(){
-		this.channel.id = this.getInt(this.idE.value);
+		this.channel.id = this.getInt(this.channel.elem.value); console.log("channel id: ", this.channel.id);
 	};
 	this.updateApp = function(){
-		this.app.id = this.getInt(this.idaE.value);
+		this.app.id = this.getInt(this.app.elem.value);
+	};
+	this.checkCommands = function(channel){
+		for(var i = 0; i<this.elements.length; i++){
+			this.elements[i].checkCommands(channel);
+		}
+	};
+	this.markAllCommandsUnsupported = function(){
+		for(var i=0; i<this.elements.length; i++){
+			this.elements[i].markAllCommandsUnsupported(); 
+		}
+	};
+	this.markSupportedCommand = function(command){
+		for(var i=0; i<this.elements.length; i++){
+			this.elements[i].markSupportedCommand(command); 
+		}
+	};
+	this.hideUnsupported = function(){
+		for(var i=0; i<this.elements.length; i++){
+			this.elements[i].hideUnsupported();
+		}
+	};
+	this.showSupported = function(){
+		for(var i=0; i<this.elements.length; i++){
+			this.elements[i].showSupported();
+		}
+	};
+	this.showAllElements = function(){
+		for(var i=0; i<this.elements.length; i++){
+			this.elements[i].showAllElements();
+		}
 	};
 	this.getInt = function(v){
 		var out = parseInt(v);
@@ -192,88 +230,8 @@ function Monitor() {
 		}
 		return out;
 	};
-	this.sendRequestSetCmdP2 = function (id, cmd, v) {
-		if(v == null){
-			return;	
-		}
-		
-		var app_id = this.getAppId();
-		if(app_id === null){
-			return;
-		}
-		if(this.port === null){
-			return;
-		}
-        var data = [
-            {
-                action: ['set_p2'],
-                param: {address: this.ipaddrE.value, port: this.port, cmd:cmd, item: [{p0:app_id, p1:v1}]}
-            }
-        ];
-        sendTo(this, data, id, 'json_dss');
-    };
-    this.sendRequestGetP2 = function (id, cmd) {
-		var app_id = this.getAppId();
-		if(app_id === null){
-			return;
-		}
-		if(this.port === null){
-			return;
-		}
-        var data = [
-            {
-                action: ['get_p2'],
-                param: {address: this.ipaddrE.value, port: this.port, cmd:cmd, item: [app_id]}
-            }
-        ];
-        sendTo(this, data, id, 'json_dss');
-    };
-	this.sendRequestCmd = function (id, cmd) {
-		var app_id = this.getAppId();
-		if(app_id === null){
-			return;
-		}
-		if(this.port === null){
-			return;
-		}
-        var data = [
-            {
-                action: ['set_cmd'],
-                param: {address: this.ipaddrE.value, port: this.port, cmd:cmd, item: [app_id]}
-            }
-        ];
-        sendTo(this, data, id, 'json_dss');
-    };
-    this.sendRequestGetText = function (id, cmd) {
-		var app_id = this.getAppId();
-		if(app_id === null){
-			return;
-		}
-		if(this.port === null){
-			return;
-		}
-        var data = [
-            {
-                action: ['get_text'],
-                param: {address: this.ipaddrE.value, port: this.port, cmd:cmd, item: [app_id]}
-            }
-        ];
-        sendTo(this, data, id, 'json_dss');
-    };
-    this.sendRequestGetTextBroadcast = function (id, cmd) {
-		if(this.port === null){
-			return;
-		}
-        var data = [
-            {
-                action: ['get_text_broadcast'],
-                param: {address: this.ipaddrE.value, port: this.port, cmd:cmd}
-            }
-        ];
-        sendTo(this, data, id, 'json_dss');
-    };
     this.show = function () {
-		document.title = trans.get(401);
+		document.title = trans.get(1001);
 		clr(this.container, "hdn");
 		this.visible = true;
     };

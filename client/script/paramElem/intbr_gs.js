@@ -1,16 +1,17 @@
-function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
+function ParamElemBrGSInt(peer, descr_id, cmd_get, cmd_set, min_v, max_v, slave) {
 	this.peer = peer;
+	this.slave = slave;
+	this.descr_id = descr_id;
 	this.cmd_get = cmd_get;
 	this.cmd_set = cmd_set;
 	this.container = cd();
     this.descrE = cd();
     this.UNKNOWN_STR = "&empty;";
-    this.nvramE = cd();
-    this.nvramE.innerHTML = this.UNKNOWN_STR;
     this.setE = c("input");
     this.setE.type = "number";
     this.setE.min = min_v;
     this.setE.max = max_v;
+    this.getB = cb("");
     this.min_v = min_v;
     this.max_v = max_v;
     if(min_v < 0){
@@ -24,18 +25,20 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 		{
 			GET: 1,
 			GETR:2,
-			SET: 3
+			SET: 3,
+			CHECK_CMD: 5
 		};
-    this.updateStr = function (descr) {
+    this.updateStr = function () {
+		this.descrE.innerHTML = trans.get(this.descr_id);
 		this.container.title = trans.get(359);
-		this.descrE.innerHTML = descr;
-		this.nvramE.title = trans.get(314);
+		this.getB.title = trans.get(314);
+		this.getB.innerHTML = trans.get(303);
 		this.setE.title = trans.get(300);
 		this.setB.updateStr(trans.get(304), trans.get(359));
 	};
 	this.sendRequestGet = function () {
 		if(this.peer.port === null || this.peer.ipaddr === null) return;
-		var pack = acp_buildRequestI(this.cmd_get );
+		var pack = acp_buildRequestI(ACPP_SIGN_REQUEST_GET_BROADCAST, this.cmd_get );
         var data = [
             {
                 action: ['get_data'],
@@ -50,7 +53,7 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 		var v = parseInt(me.setE.value);
 		if(isNaN(v)){return;}
 		if(v < me.min_v || v > me.max_v) return;
-		var pack = acp_buildRequestII(me.cmd_set, v);
+		var pack = acp_buildRequestII(ACPP_SIGN_REQUEST_SET_BROADCAST, me.cmd_set, v);
         var data = [
             {
                 action: ['set_data'],
@@ -61,8 +64,9 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
         sendTo(me, data, me.ACTION.SET, 'server');
     };
     this.updateElem = function(elem, v){
-		var elemv = this.UNKNOWN_STR;
+		var elemv = 0;
 		var bstyle = "pr_failed";
+		var found = 0;
 		if(v !== null){
 			var data = acp_parseResponse(v, {v1:null, v2:null});
 			if(data instanceof Array && data.length == 1){
@@ -70,17 +74,21 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 				var status = parseInt(data[0].v2);
 				if(!(isNaN(val))){
 					if(status == 1){
+						found = 1;
 						elemv = val;
 						bstyle = "pr_success";
 					}
 				}
 			}
 		}
-		elem.innerHTML = elemv;
+		if(found){
+			elem.value = elemv;
+			this.slave.elem.value = elemv;
+			this.slave.id = this.slave.elem.value;
+		}
 		blink(elem, bstyle, this.blink_tm);
 	};
 	this.updateElemBad = function(elem){
-		elem.innerHTML = this.UNKNOWN_STR;
 		blink(elem, "pr_failed", this.blink_tm);
 	};
     this.confirm = function (action, d, dt) {
@@ -89,7 +97,7 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 				blink(this.setE, "pr_success", this.blink_tm);
 				break;
 			case this.ACTION.GET:
-				this.updateElem(this.nvramE, d);
+				this.updateElem(this.setE, d);
 				break;
 			default:
 				console.log("confirm: unknown action: ", action);
@@ -103,7 +111,7 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 				blink(this.setE, "pr_failed", this.blink_tm);
 				break;
 			case this.ACTION.GET:
-				this.updateElemBad(this.nvramE);
+				this.updateElemBad(this.setE);
 				break;
 			default:
 				console.log("abort: unknown action: ", action);
@@ -112,13 +120,22 @@ function ParamElemBrGSInt(peer, cmd_get, cmd_set, min_v, max_v) {
 		cursor_blocker.disable();
 	};
 	var self = this;
-	this.setB = new BtnProt(self, self.sendRequestSet, "pr_btnprot", true);
-	this.nvramE.onclick = function(){
+	
+	this.getB.onclick = function(){
 		self.sendRequestGet();
 	};
-	a(this.container, [this.descrE, this.nvramE, this.setE, this.setB]);
+	this.setE.onchange = function(){
+		self.slave.elem.value = self.setE.value;
+		self.slave.id = self.slave.elem.value;
+	};
+	this.setB = new BtnProt(self, self.sendRequestSet, "pr_btnprot", true);
+	this.cmdd = new CommandDetector(peer, [
+	    {elem: this.getB, commands: [this.cmd_get]},
+	    {elem: this.setB, commands: [this.cmd_set]}
+    ]);
+	a(this.container, [this.descrE, this.setE, this.getB, this.setB]);
+	cla(this.container, ["pr"]);
 	cla(this.descrE, ["pr_descr"]);
-	cla([this.nvramE],["pr_getelem"]);
 	cla([this.setE],["pr_setelem"]);
-	cla([this.setB],["pr_button"]);
+	cla([this.getB, this.setB],["pr_button"]);
 }

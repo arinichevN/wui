@@ -98,6 +98,10 @@
 	margin-left:5px;
 	max-width:60px;
 }
+.pr_setelem5{
+	float:left;
+	margin-left:5px;
+}
 .pr_setcont{
 	float:left;
 	margin-left:5px;
@@ -114,20 +118,43 @@
 	color:red;
 }
 .pr_success{
-    color: green;
-    opacity: 1;
+	color: green;
+	opacity: 1;
 }
 .pr_failed{
-    color: red;
-    opacity: 1;
+	color: red;
+	opacity: 1;
 }
 .pr_badval{
-    color: lightyellow;
-    opacity: 1;
+	color: lightyellow;
+	opacity: 1;
 }
 .pr_sametm{
-    color: lightblue;
-    opacity: 1;
+	color: lightblue;
+	opacity: 1;
+}
+
+.ch_elem{
+	float: left;
+	border: 1px solid black;
+	margin: 3px;
+	padding: 3px;
+}
+
+.ch_elem:hover{
+	outline:1px solid gray;
+}
+
+.ch_elem_selected{
+    background-color: lightgray;
+}
+.ch_cont{
+	min-height: 30px;
+	border: 1px solid green;
+}
+
+.pr_unsupported{
+	border-bottom: 1px solid red;
 }
 
 
