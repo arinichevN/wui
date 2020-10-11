@@ -197,7 +197,7 @@ var CMD_ = {
 //====================CHANNEL===============================
 	CHANNEL_START:0,
 	CHANNEL_STOP:0,
-	CHANNEL_RELOAD:0,
+	CHANNEL_RESET:0,
 	SET_CHANNEL_ID:0,
 	SET_CHANNEL_SAVE_GOAL:0,
 	SET_CHANNEL_DEVICE_KIND:0,

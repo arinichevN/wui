@@ -72,7 +72,7 @@ function Monitor() {
 			new MainGroup(317, [
 				new ParamElemSCmd(peer, channel, 309, null, CMD_.CHANNEL_START, false),
 				new ParamElemSCmd(peer, channel, 310, null, CMD_.CHANNEL_STOP, false),
-				new ParamElemSCmd(peer, channel, 311, null, CMD_.CHANNEL_RELOAD, false),
+				new ParamElemSCmd(peer, channel, 311, null, CMD_.CHANNEL_RESET, false),
 				new ParamElemGGSEnum(peer, channel, 374, CMD_.GET_CHANNEL_DEVICE_KIND, CMD_.GETR_CHANNEL_DEVICE_KIND, CMD_.SET_CHANNEL_DEVICE_KIND, device_kind_list),
 				new ParamElemGGSInt(peer, channel, 394, CMD_.GET_CHANNEL_PIN, CMD_.GETR_CHANNEL_PIN, CMD_.SET_CHANNEL_PIN, INT16_MIN, INT16_MAX),
 				new ParamElemGGSFloat(peer, channel, 322, CMD_.GET_CHANNEL_GOAL, CMD_.GETR_CHANNEL_GOAL, CMD_.SET_CHANNEL_GOAL),

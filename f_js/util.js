@@ -855,3 +855,9 @@ function limval(v, min, max) {
     }
     return v;
 }
+function checkFloat(v){
+	if(isNaN(v) || !isFinite(v)){
+		return 0;
+	}
+	return 1;
+}
