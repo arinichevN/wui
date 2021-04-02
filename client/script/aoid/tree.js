@@ -136,6 +136,9 @@ function AoidTree(master, peer, app_id) {
 			case AOID_KIND_DEVICE_KIND_PARAM:
 				new_item = new AoidParamEnum(this, id, parent_id, kind, description_id, device_kind_list);
 				break;
+			case AOID_KIND_AOUT_CHANNEL_DEVICE_KIND_PARAM:
+				new_item = new AoidParamEnum(this, id, parent_id, kind, description_id, aout_channel_device_kind_list);
+				break;
 			case AOID_KIND_YN_PARAM:
 				new_item = new AoidParamEnum(this, id, parent_id, kind, description_id, yn_list);
 				break;

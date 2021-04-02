@@ -53,12 +53,10 @@ function AoidList (master, id, parent_id, kind, description_id){
 		this.items.push(c);
 		a(this.itemCont, c);
 	};
-	this.commandSupported = function(command, supported){
-		if(supported){
-			let new_item = new AoidCommandCmd(this, command);
-			this.commands.push(new_item);
-			a(this.cmdCont, new_item);
-		}
+	this.commandSupported = function(command){
+		let new_item = new AoidCommandCmd(this, command);
+		this.commands.push(new_item);
+		a(this.cmdCont, new_item);
 	};
 	this.descrE.onclick = ()=>{
 		this.updateValues();

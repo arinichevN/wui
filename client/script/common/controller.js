@@ -115,6 +115,12 @@ const text_alignment_list = [
 	{name: "RIGHT", value:2}
 ];
 
+const aout_channel_device_kind_list = [
+	{name: "UNKNOWN", value: 0},
+	{name: "SPWM", value: 10},
+	{name: "HPWM", value: 11}
+];
+
 const pin_state_list = [
 	{name: "HIGH", value:1},
 	{name: "LOW", value:0}

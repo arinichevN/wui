@@ -26,41 +26,39 @@ function Noid(master, id, next_id){
 			this.commands[i].updateValues();
 		}
 	};
-	this.commandSupported = function(command, supported){
-		if(supported){
-			let new_item = null;
-			switch(command){
-				case CMD_NOID_GET_EXISTS:
-					new_item = new NoidCommandGetEnum(this, command, yn_list);
-					break;
-				case CMD_NOID_GET_FTS:
-					new_item = new NoidCommandGetFts(this, command, FLOAT_PRECISION);
-					break;
-				case CMD_NOID_GET_STATE:
-					new_item = new NoidCommandGetEnum(this, command, state_list);
-					break;
-				case CMD_NOID_GET_ERROR:
-					new_item = new NoidCommandGetEnum(this, command, error_list);
-					break;
-				case CMD_NOID_GET_DEVICE_KIND:
-					new_item = new NoidCommandGetEnum(this, command, device_kind_list);
-					break;
-				case CMD_NOID_START:
-				case CMD_NOID_STOP:
-				case CMD_NOID_RESET:
-					new_item = new NoidCommandCmd(this, command);
-					break;
-				case CMD_NOID_SET_GOAL:
-					new_item = new NoidCommandSetFloat(this, command, FLOAT_MIN, FLOAT_MAX, FLOAT_PRECISION);
-					break;
-				case CMD_NOID_SET_TEXT:
-				case CMD_NOID_SET_TEXT_BLINK:
-					new_item = new NoidCommandSetStr(this, command);
-					break;
-			}
-			this.commands.push(new_item);
-			a(this.cmdCont, new_item);
+	this.commandSupported = function(command){
+		let new_item = null;
+		switch(command){
+			case CMD_NOID_GET_EXISTS:
+				new_item = new NoidCommandGetEnum(this, command, yn_list);
+				break;
+			case CMD_NOID_GET_FTS:
+				new_item = new NoidCommandGetFts(this, command, FLOAT_PRECISION);
+				break;
+			case CMD_NOID_GET_STATE:
+				new_item = new NoidCommandGetEnum(this, command, state_list);
+				break;
+			case CMD_NOID_GET_ERROR:
+				new_item = new NoidCommandGetEnum(this, command, error_list);
+				break;
+			case CMD_NOID_GET_DEVICE_KIND:
+				new_item = new NoidCommandGetEnum(this, command, device_kind_list);
+				break;
+			case CMD_NOID_START:
+			case CMD_NOID_STOP:
+			case CMD_NOID_RESET:
+				new_item = new NoidCommandCmd(this, command);
+				break;
+			case CMD_NOID_SET_GOAL:
+				new_item = new NoidCommandSetFloat(this, command, FLOAT_MIN, FLOAT_MAX, FLOAT_PRECISION);
+				break;
+			case CMD_NOID_SET_TEXT:
+			case CMD_NOID_SET_TEXT_BLINK:
+				new_item = new NoidCommandSetStr(this, command);
+				break;
 		}
+		this.commands.push(new_item);
+		a(this.cmdCont, new_item);
 	};
 	this.descrE.onclick = ()=>{
 		this.updateValues();

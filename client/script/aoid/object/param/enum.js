@@ -54,21 +54,19 @@ function AoidParamEnum(master, id, parent_id, kind, description_id, list) {
 	this.a = function(c){
 		console.warn("this aoid is not able to store children", this, c);
 	};
-	this.commandSupported = function(command, supported){
-		if(supported){
-			let new_item = null;
-			switch(command){
-				case CMD_AOID_GET_RAM_VALUE:
-				case CMD_AOID_GET_NVRAM_VALUE:
-					new_item = new AoidCommandGetEnum(this, command, this.list);
-					break;
-				case CMD_AOID_SET_NVRAM_VALUE:
-					new_item = new AoidCommandSetEnum(this, command, this.list);
-					break;
-			}
-			this.commands.push(new_item);
-			a(this.cmdCont, new_item);
+	this.commandSupported = function(command){
+		let new_item = null;
+		switch(command){
+			case CMD_AOID_GET_RAM_VALUE:
+			case CMD_AOID_GET_NVRAM_VALUE:
+				new_item = new AoidCommandGetEnum(this, command, this.list);
+				break;
+			case CMD_AOID_SET_NVRAM_VALUE:
+				new_item = new AoidCommandSetEnum(this, command, this.list);
+				break;
 		}
+		this.commands.push(new_item);
+		a(this.cmdCont, new_item);
 	};
 	this.descrE.onclick = ()=>{
 		this.updateValues();
