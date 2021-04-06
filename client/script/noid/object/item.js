@@ -1,4 +1,5 @@
 function Noid(master, id, next_id){
+	this.master = master;
 	this.peer = master.peer;
 	this.id = id;
 	this.next_id = next_id;

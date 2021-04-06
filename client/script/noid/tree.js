@@ -138,7 +138,7 @@ function NoidTree(master, peer){
 				}
 			} else {
 				this.refreshFailed();
-				console.warn("bad data");
+				console.warn("array with single element expected");
 			}
 		}
 	};

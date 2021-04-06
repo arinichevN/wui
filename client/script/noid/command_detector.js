@@ -44,6 +44,8 @@ function NoidCommandDetector(expected_commands){
 				} else {
 					console.warn("bad data", obj_id, cmd_id);
 				}
+			} else {
+				console.warn("array with single element expected", data);
 			}
 		}
 		this.checkFailed();

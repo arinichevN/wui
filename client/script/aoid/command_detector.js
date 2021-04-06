@@ -6,6 +6,10 @@ function AoidCommandDetector(expected_commands){
 	this.app_id = null;
 	this.obj_id = null;
 	this.is_last_command = false;
+	this.RETRY_MAX = 3;
+	this.retry_count = 0;
+	this.last_action = null;
+	this.last_data = null;
 	this.notifySlave = function(command_id){
 		for(let i=0; i<this.commands.length; i++){
 			if(this.commands[i] === command_id){
@@ -30,6 +34,7 @@ function AoidCommandDetector(expected_commands){
 				let cmd_id = parseInt(data[0].v3);
 				if(!(isNaN(app_id) || isNaN(obj_id) || isNaN(cmd_id))){
 					if(app_id === this.app_id && obj_id === this.obj_id){
+						this.retry_count = 0;
 						if(cmd_id === CMD_NONE){
 							if(this.is_last_command){
 								this.slave.onLastCommandChecked();
@@ -45,18 +50,42 @@ function AoidCommandDetector(expected_commands){
 				} else {
 					console.warn("bad data", app_id, obj_id, cmd_id);
 				}
+			} else {
+				console.warn("array with single element expected", data);
 			}
+		} else {
+			console.warn("no data");
 		}
-		this.checkFailed();
-		console.warn("failed to check supported command");
+		this.retryOrFail();
+		
+	};
+	this.retry = function(){
+		remoteGetAcpData_bl(this, this.last_action, this.peer, this.last_data);
+	};
+	this.retryOrFail = function(){
+		if(this.retry_count < this.RETRY_MAX){
+			//console.log("retry or fail: retry");
+			this.retry();
+			this.retry_count++;
+		} else {
+			//console.log("retry or fail: fail");
+			this.checkFailed();
+			this.retry_count = 0;
+			console.warn("failed to check supported command");
+		}
+	};
+	this.sendRequest = function(action, data){
+		this.last_action = action;
+		this.last_data = data;
+		remoteGetAcpData_bl(this, action, this.peer, data);
 	};
 	this.sendRequestGetFirst = function() {
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET, CMD_AOID_GET_ACP_COMMAND_SUPPORTED_FIRST, this.app_id, this.obj_id]);
-		remoteGetAcpData_bl(this, this.ACTION.GET_FIRST, this.peer, d);
+		this.sendRequest(this.ACTION.GET_FIRST, d);
 	};
 	this.sendRequestGetNext = function(command) {
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET, CMD_AOID_GET_ACP_COMMAND_SUPPORTED_NEXT, this.app_id, this.obj_id, command]);
-		remoteGetAcpData_bl(this, this.ACTION.GET_NEXT, this.peer, d);
+		this.sendRequest(this.ACTION.GET_NEXT, d);
 	};
 	this.checkCommands = function(slave, peer, app_id, obj_id, is_last_command){
 		this.slave = slave;

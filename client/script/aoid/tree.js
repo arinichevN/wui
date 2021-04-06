@@ -5,6 +5,10 @@ function AoidTree(master, peer, app_id) {
 	this.items = [];
 	this.raw_items = [];
 	this.command_failed = false;
+	this.RETRY_MAX = 3;
+	this.retry_count = 0;
+	this.last_action = null;
+	this.last_data = null;
 	this.container = cd();
 	this.itemCont = cd();
 	this.shE = new ShowHideElement(null);
@@ -294,24 +298,43 @@ function AoidTree(master, peer, app_id) {
 		a(document.body, linkE);
 		linkE.click(); 
 	};
+	this.retry = function(){
+		remoteGetAcpData_bl(this, this.last_action, this.peer, this.last_data);
+	};
+	this.retryOrFail = function(){
+		if(this.retry_count < this.RETRY_MAX){
+			//console.log("retry or fail: retry");
+			this.retry();
+			this.retry_count++;
+		} else {
+			//console.log("retry or fail: fail");
+			this.refreshFailed();
+			this.retry_count = 0;
+		}
+	};
+	this.sendRequest = function(action, data){
+		this.last_action = action;
+		this.last_data = data;
+		remoteGetAcpData_bl(this, action, this.peer, data);
+	};
 	this.getFirstItem = function () {
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET, CMD_AOID_GET_FIRST, this.app_id]);
-		remoteGetAcpData_bl(this, this.ACTION.GET_FIRST, this.peer, d);
+		this.sendRequest(this.ACTION.GET_FIRST, d);
 	};
 	this.getNextItem = function (oid_id) {
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET, CMD_AOID_GET_NEXT, this.app_id, oid_id]);
-		remoteGetAcpData_bl(this, this.ACTION.GET_NEXT, this.peer, d);
+		this.sendRequest(this.ACTION.GET_NEXT, d);
 	};
 	this.addItem = function(v){
 		if(v !== null){
 			if(v instanceof String) {
-				this.refreshFailed();
 				console.warn("is string");
+				this.retryOrFail();
 				return;
 			}
 			if(v.length === 0){
-				this.refreshFailed();
 				console.warn("no rows");
+				this.retryOrFail();
 				return;
 			}
 			//app_id, oid_id, oid_parent_id, oid_kind, oid_description
@@ -324,6 +347,7 @@ function AoidTree(master, peer, app_id) {
 				let oid_descr = parseInt(data[0].v5);
 				if(!(isNaN(app_id) || isNaN(oid_id) || isNaN(oid_parent_id) || isNaN(oid_kind) || isNaN(oid_descr))){
 					if(app_id === this.app_id){
+						this.retry_count = 0;
 						//console.log("aoid new raw");
 						if(oid_id == AOID_ID_UNKNOWN){//no more objects
 							//console.log("aoid: building");
@@ -333,21 +357,22 @@ function AoidTree(master, peer, app_id) {
 							//console.log("aoid: next");
 							this.raw_items.push({id: oid_id, parent_id: oid_parent_id, kind: oid_kind, description_id: oid_descr});
 							this.getNextItem(oid_id);
+							return;
 						}
 					}else{
-						this.refreshFailed();
 						console.warn("bad app_id:", app_id, " expected:", this.app_id);
 					}
 				} else {
-					this.refreshFailed();
 					console.warn("bad response format");
 					
 				}
 			} else {
-				this.refreshFailed();
-				console.warn("bad data");
+				console.warn("array with single element expected");
 			}
+		} else {
+			console.warn("no data");
 		}
+		this.retryOrFail();
 	};
 	this.confirm = function (action, data, dt) {
 		switch (action) {
