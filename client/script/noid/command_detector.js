@@ -4,6 +4,7 @@ function NoidCommandDetector(expected_commands){
 	this.peer = null;
 	this.slave = null;
 	this.obj_id = null;
+	this.is_last_command = false;
 	this.notifySlave = function(command_id){
 		for(let i=0; i<this.commands.length; i++){
 			if(this.commands[i] === command_id){
@@ -14,6 +15,12 @@ function NoidCommandDetector(expected_commands){
 		}
 		console.warn("NOID command ", command_id, "is not supported by this application");
 	};
+	this.checkFailed = function(){
+		this.slave.onCheckCommandsFailed();
+		if(this.is_last_command){
+			this.slave.onLastCommandChecked();
+		}
+	};
 	this.commandSupported = function(v){
 		if(v !== null){
 			let data = acp_parseResponse(v, {v1:null, v2:null});
@@ -22,19 +29,24 @@ function NoidCommandDetector(expected_commands){
 				let cmd_id = parseInt(data[0].v2);
 				if(!(isNaN(obj_id) || isNaN(cmd_id))){
 					if(obj_id === this.obj_id){
-						if(cmd_id === CMD_NONE) return;
-						console.log(this.obj_id, "it is", cmd_id);
+						if(cmd_id === CMD_NONE){
+							if(this.is_last_command){
+								this.slave.onLastCommandChecked();
+							}
+							return;
+						}
 						this.notifySlave(cmd_id);
 						this.sendRequestGetNext(cmd_id);
 						return;
-					}else{
-						console.warn("bad object id");
+					} else {
+						console.warn("unexpected data", obj_id);
 					}
 				} else {
-					console.warn("bad data");
+					console.warn("bad data", obj_id, cmd_id);
 				}
 			}
 		}
+		this.checkFailed();
 		console.warn("failed to check supported command");
 	};
 	this.sendRequestGetFirst = function(command) {
@@ -47,10 +59,11 @@ function NoidCommandDetector(expected_commands){
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET, CMD_NOID_GET_ACP_COMMAND_SUPPORTED_NEXT, this.obj_id, command]);
 		remoteGetAcpData_bl(this, this.ACTION.GET_NEXT, this.peer, d);
 	};
-	this.checkCommands = function(slave, peer, obj_id){
+	this.checkCommands = function(slave, peer, obj_id, is_last_command){
 		this.slave = slave;
 		this.peer = peer;
 		this.obj_id = obj_id;
+		this.is_last_command = is_last_command;
 		this.sendRequestGetFirst();
 	};
 	this.confirm = function (action, d, dt) {
@@ -70,9 +83,11 @@ function NoidCommandDetector(expected_commands){
 	this.abort = function (action, data, ind, dt, user) {
 		switch (action) {
 			case this.ACTION.GET_NEXT:
+				this.checkFailed();
 				console.warn("failed to get next supported command");
 				break;
 			case this.ACTION.GET_FIRST:
+				this.checkFailed();
 				console.warn("failed to get first supported command");
 				break;
 			default:

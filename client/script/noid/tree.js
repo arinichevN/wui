@@ -3,6 +3,7 @@ function NoidTree(master, peer){
 	this.peer = {ipaddr: peer.ipaddr, port: peer.port};
 	this.items = [];
 	this.raw_items = [];
+	this.command_failed = false;
 	this.container = cd();
 	this.itemCont = cd();
 	this.shE = new ShowHideElement(null);
@@ -55,6 +56,8 @@ function NoidTree(master, peer){
 			let new_item = this.createItem(this.raw_items[i]);
 			if(new_item !== null){
 				this.items.push(new_item);
+			} else {
+				console.warn("unknown NOID");
 			}
 		}
 	};
@@ -66,7 +69,7 @@ function NoidTree(master, peer){
 	};
 	this.checkCommands = function(){
 		for(let i = 0; i<this.items.length; i++){
-			this.items[i].checkCommands();
+			this.items[i].checkCommands(i===(this.items.length-1));
 		}
 	};
 	this.buildItems = function(){
@@ -78,7 +81,23 @@ function NoidTree(master, peer){
 		clearc(this.itemCont);
 		cleara(this.items);
 		cleara(this.raw_items);
+		this.command_failed = false;
 		this.getFirstItem();
+	};
+	this.refreshFailed = function(){
+		clearc(this.itemCont);
+		cleara(this.items);
+		cleara(this.raw_items);
+		blinkElemBad(this.updateB);
+	};
+	this.onCheckCommandsFailed = function(){
+		this.command_failed = true;
+	};
+	this.onLastCommandChecked = function(){
+		//console.log("last NOID command checked");
+		if(this.command_failed){
+			this.refreshFailed();
+		}
 	};
 	this.getFirstItem = function () {
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET_BROADCAST, CMD_NOID_GET_FIRST]);
@@ -89,16 +108,15 @@ function NoidTree(master, peer){
 		remoteGetAcpData_bl(this, this.ACTION.GET_NEXT, this.peer, d);
 	};
 	this.addItem = function(v){
-		let found = 0;
 		if(v !== null){
 			if(v instanceof String) {
-				blinkElemBad(this.updateB);
-				this.buildItems();
+				this.refreshFailed();
+				console.warn("is string");
 				return;
 			}
 			if(v.length === 0){
-				blinkElemBad(this.updateB);
-				this.buildItems();
+				this.refreshFailed();
+				console.warn("no rows");
 				return;
 			}
 			//oid_id, oid_parent_id, oid_kind, oid_description
@@ -107,7 +125,6 @@ function NoidTree(master, peer){
 				let oid_id = parseInt(data[0].v1);
 				let next_oid_id = parseInt(data[0].v2);
 				if(!(isNaN(oid_id) || isNaN(next_oid_id))){
-					found = 1;
 					this.raw_items.push({id: oid_id, next_id: next_oid_id});
 					if(next_oid_id == NOID_ID_UNKNOWN){//no more objects
 						this.buildItems();
@@ -115,16 +132,15 @@ function NoidTree(master, peer){
 					}else{
 						this.getNextItem(next_oid_id);
 					}
+				} else {
+					this.refreshFailed();
+					console.warn("bad response format");
 				}
+			} else {
+				this.refreshFailed();
+				console.warn("bad data");
 			}
 		}
-		if(!found){
-			this.addItemFailed();
-		}
-	};
-	this.addItemFailed = function(){
-		this.raw_items.push({id: NOID_ID_UNKNOWN, next_id: NOID_ID_UNKNOWN});
-		this.buildItems();
 	};
 	this.confirm = function (action, data, dt) {
 		switch (action) {
@@ -143,12 +159,14 @@ function NoidTree(master, peer){
 	this.abort = function (action, data, ind, dt, user) {
 		switch (action) {
 			case this.ACTION.GET_NEXT:
-				blinkElemBad(this.updateB);
+				this.refreshFailed();
 				cursor_blocker.disable();
+				console.warn("get next: abort");
 				break;
 			case this.ACTION.GET_FIRST:
-				blinkElemBad(this.updateB);
+				this.refreshFailed();
 				cursor_blocker.disable();
+				console.warn("get first: abort");
 				break;
 			default:
 				console.warn("abort: unknown action: ", action);

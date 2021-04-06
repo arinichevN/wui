@@ -5,6 +5,7 @@ function AoidCommandDetector(expected_commands){
 	this.slave = null;
 	this.app_id = null;
 	this.obj_id = null;
+	this.is_last_command = false;
 	this.notifySlave = function(command_id){
 		for(let i=0; i<this.commands.length; i++){
 			if(this.commands[i] === command_id){
@@ -13,6 +14,12 @@ function AoidCommandDetector(expected_commands){
 			}
 		}
 		console.warn("AOID command ", command_id, "is not supported by this application");
+	};
+	this.checkFailed = function(){
+		this.slave.onCheckCommandsFailed();
+		if(this.is_last_command){
+			this.slave.onLastCommandChecked();
+		}
 	};
 	this.commandSupported = function(v){
 		if(v !== null){
@@ -23,14 +30,24 @@ function AoidCommandDetector(expected_commands){
 				let cmd_id = parseInt(data[0].v3);
 				if(!(isNaN(app_id) || isNaN(obj_id) || isNaN(cmd_id))){
 					if(app_id === this.app_id && obj_id === this.obj_id){
-						if(cmd_id === CMD_NONE) return;
+						if(cmd_id === CMD_NONE){
+							if(this.is_last_command){
+								this.slave.onLastCommandChecked();
+							}
+							return;
+						}
 						this.notifySlave(cmd_id);
 						this.sendRequestGetNext(cmd_id);
 						return;
+					} else {
+						console.warn("unexpected data", app_id, obj_id);
 					}
+				} else {
+					console.warn("bad data", app_id, obj_id, cmd_id);
 				}
 			}
 		}
+		this.checkFailed();
 		console.warn("failed to check supported command");
 	};
 	this.sendRequestGetFirst = function() {
@@ -41,11 +58,12 @@ function AoidCommandDetector(expected_commands){
 		let d = acp_buildRequest([ACPP_SIGN_REQUEST_GET, CMD_AOID_GET_ACP_COMMAND_SUPPORTED_NEXT, this.app_id, this.obj_id, command]);
 		remoteGetAcpData_bl(this, this.ACTION.GET_NEXT, this.peer, d);
 	};
-	this.checkCommands = function(slave, peer, app_id, obj_id){
+	this.checkCommands = function(slave, peer, app_id, obj_id, is_last_command){
 		this.slave = slave;
 		this.peer = peer;
 		this.app_id = app_id;
 		this.obj_id = obj_id;
+		this.is_last_command = is_last_command;
 		this.sendRequestGetFirst();
 	};
 	this.confirm = function (action, d, dt) {
@@ -65,9 +83,11 @@ function AoidCommandDetector(expected_commands){
 	this.abort = function (action, data, ind, dt, user) {
 		switch (action) {
 			case this.ACTION.GET_NEXT:
+				this.checkFailed();
 				console.warn("failed to get next supported command");
 				break;
 			case this.ACTION.GET_FIRST:
+				this.checkFailed();
 				console.warn("failed to get first supported command");
 				break;
 			default:

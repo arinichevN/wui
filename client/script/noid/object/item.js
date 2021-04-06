@@ -16,10 +16,16 @@ function Noid(master, id, next_id){
 			this.commands[i].updateStr();
 		}
 	};
-	this.checkCommands = function(){
+	this.checkCommands = function(is_last_command){
 		clearc(this.cmdCont);
 		cleara(this.commands);
-		this.cmdd.checkCommands(this, this.peer, this.id);
+		this.cmdd.checkCommands(this, this.peer, this.id, is_last_command);
+	};
+	this.onCheckCommandsFailed = function(){
+		this.master.onCheckCommandsFailed();
+	};
+	this.onLastCommandChecked = function(){
+		this.master.onLastCommandChecked();
 	};
 	this.updateValues = function(){
 		for(let i=0; i<this.commands.length; i++){

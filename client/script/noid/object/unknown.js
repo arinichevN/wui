@@ -8,8 +8,14 @@ function NoidUnknown(master, id, next_id){
 	this.updateStr = function(){
 		this.descrE.innerHTML = trans.get(316);
 	};
-	this.checkCommands = function(){
+	this.checkCommands = function(is_last_command){
 		;
+	};
+	this.onCheckCommandsFailed = function(){
+		this.master.onCheckCommandsFailed();
+	};
+	this.onLastCommandChecked = function(){
+		this.master.onLastCommandChecked();
 	};
 	this.updateValues = function(){
 		;

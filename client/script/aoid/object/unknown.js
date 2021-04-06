@@ -9,8 +9,14 @@ function AoidUnknown (master, id, parent_id, kind, description_id) {
 	this.updateStr = function () {
 		this.descrE.innerHTML = trans.get(316);
 	};
-	this.checkCommands = function(){
+	this.checkCommands = function(is_last_command){
 		;
+	};
+	this.onCheckCommandsFailed = function(){
+		this.master.onCheckCommandsFailed();
+	};
+	this.onLastCommandChecked = function(){
+		this.master.onLastCommandChecked();
 	};
 	this.getData = function(storage){
 		storage.push({id: this.id, parent_id: this.parent_id, kind: this.kind, description_id: this.description_id, commands:[]});

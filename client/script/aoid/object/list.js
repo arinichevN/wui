@@ -20,10 +20,16 @@ function AoidList (master, id, parent_id, kind, description_id){
 			this.commands[i].updateStr();
 		}
 	};
-	this.checkCommands = function(){
+	this.checkCommands = function(is_last_command){
 		clearc(this.cmdCont);
 		cleara(this.commands);
-		this.cmdd.checkCommands(this, this.master.peer, this.master.app_id, this.id);
+		this.cmdd.checkCommands(this, this.master.peer, this.master.app_id, this.id, is_last_command);
+	};
+	this.onCheckCommandsFailed = function(){
+		this.master.onCheckCommandsFailed();
+	};
+	this.onLastCommandChecked = function(){
+		this.master.onLastCommandChecked();
 	};
 	this.getData = function(storage){
 		let cmds = [];

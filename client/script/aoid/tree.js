@@ -4,6 +4,7 @@ function AoidTree(master, peer, app_id) {
 	this.app_id = app_id;
 	this.items = [];
 	this.raw_items = [];
+	this.command_failed = false;
 	this.container = cd();
 	this.itemCont = cd();
 	this.shE = new ShowHideElement(null);
@@ -202,6 +203,8 @@ function AoidTree(master, peer, app_id) {
 			let new_item = this.createItem(this.raw_items[i]);
 			if(new_item !== null){
 				this.items.push(new_item);
+			} else {
+				console.warn("unknown AOID");
 			}
 		}
 	};
@@ -221,7 +224,7 @@ function AoidTree(master, peer, app_id) {
 	this.checkCommands = function(){
 		for(let i = 0; i<this.items.length; i++){
 			let item = this.items[i];
-			item.checkCommands();
+			item.checkCommands(i===(this.items.length-1));
 		}
 	};
 	this.buildItems = function(){
@@ -233,7 +236,23 @@ function AoidTree(master, peer, app_id) {
 		clearc(this.itemCont);
 		cleara(this.items);
 		cleara(this.raw_items);
+		this.command_failed = false;
 		this.getFirstItem();
+	};
+	this.refreshFailed = function(){
+		clearc(this.itemCont);
+		cleara(this.items);
+		cleara(this.raw_items);
+		blinkElemBad(this.updateB);
+	};
+	this.onCheckCommandsFailed = function(){
+		this.command_failed = true;
+	};
+	this.onLastCommandChecked = function(){
+		//console.log("last AOID command checked");
+		if(this.command_failed){
+			this.refreshFailed();
+		}
 	};
 	this.download = function(){
 		let input = c("input");
@@ -284,16 +303,15 @@ function AoidTree(master, peer, app_id) {
 		remoteGetAcpData_bl(this, this.ACTION.GET_NEXT, this.peer, d);
 	};
 	this.addItem = function(v){
-		let found = 0;
 		if(v !== null){
 			if(v instanceof String) {
-				blinkElemBad(this.updateB);
-				this.buildItems();
+				this.refreshFailed();
+				console.warn("is string");
 				return;
 			}
 			if(v.length === 0){
-				blinkElemBad(this.updateB);
-				this.buildItems();
+				this.refreshFailed();
+				console.warn("no rows");
 				return;
 			}
 			//app_id, oid_id, oid_parent_id, oid_kind, oid_description
@@ -306,7 +324,6 @@ function AoidTree(master, peer, app_id) {
 				let oid_descr = parseInt(data[0].v5);
 				if(!(isNaN(app_id) || isNaN(oid_id) || isNaN(oid_parent_id) || isNaN(oid_kind) || isNaN(oid_descr))){
 					if(app_id === this.app_id){
-						found = 1;
 						//console.log("aoid new raw");
 						if(oid_id == AOID_ID_UNKNOWN){//no more objects
 							//console.log("aoid: building");
@@ -318,18 +335,19 @@ function AoidTree(master, peer, app_id) {
 							this.getNextItem(oid_id);
 						}
 					}else{
+						this.refreshFailed();
 						console.warn("bad app_id:", app_id, " expected:", this.app_id);
 					}
+				} else {
+					this.refreshFailed();
+					console.warn("bad response format");
+					
 				}
+			} else {
+				this.refreshFailed();
+				console.warn("bad data");
 			}
 		}
-		if(!found){
-			this.addItemFailed();
-		}
-	};
-	this.addItemFailed = function(){
-		this.raw_items.push({id: AOID_ID_UNKNOWN, parent_id: AOID_ID_UNKNOWN, kind: AOID_KIND_UNKNOWN, descr: AOID_DESCRIPTION_UNKNOWN});
-		this.buildItems();
 	};
 	this.confirm = function (action, data, dt) {
 		switch (action) {
@@ -348,12 +366,14 @@ function AoidTree(master, peer, app_id) {
 	this.abort = function (action, data, ind, dt, user) {
 		switch (action) {
 			case this.ACTION.GET_NEXT:
-				blinkElemBad(this.updateB);
+				this.refreshFailed();
 				cursor_blocker.disable();
+				console.warn("get next: abort");
 				break;
 			case this.ACTION.GET_FIRST:
-				blinkElemBad(this.updateB);
+				this.refreshFailed();
 				cursor_blocker.disable();
+				console.warn("get first: abort");
 				break;
 			default:
 				console.warn("abort: unknown action: ", action);
