@@ -34,7 +34,7 @@ let aoid_description_dict = [
 	{id: AOID_DESCRIPTION_INPUT_MAX, str: ["input max", "максимальный вход"]},
 	{id: AOID_DESCRIPTION_PIN, str: ["pin", "ножка"]},
 	{id: AOID_DESCRIPTION_POLL_INTERVAL_MS, str: ["poll interval, ms", "период опроса, мс"]},
-	{id: AOID_DESCRIPTION_PIN_CS, str: ["CS pin", "пин CS"]},
+	{id: AOID_DESCRIPTION_PIN_CS, str: ["CS pin", "ножка CS"]},
 	{id: AOID_DESCRIPTION_PIN_SCLK, str: ["SCLK pin", "ножка SCLK"]},
 	{id: AOID_DESCRIPTION_PIN_MISO, str: ["MISO pin", "ножка MISO"]},
 	{id: AOID_DESCRIPTION_PIN_MOSI, str: ["MOSI pin", "ножка MOSI"]},
